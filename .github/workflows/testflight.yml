@@ -16,7 +16,7 @@
 #   5. APP_STORE_CONNECT_API_KEY = the full text content of the .p8 file
 #   6. DEVELOPMENT_TEAM = your Team ID from developer.apple.com/account (top-right menu)
 #   7. Register the app: appstoreconnect.apple.com → Apps → + → New App
-#      Bundle ID: com.buds.app  |  Name: Buds
+#      Bundle ID: io.lou.app  |  Name: Buds
 #
 # The workflow uses Xcode's automatic signing with the API key (-allowProvisioningUpdates),
 # so no manual certificate or provisioning profile management is needed.
