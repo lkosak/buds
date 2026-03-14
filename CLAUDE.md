@@ -1,4 +1,4 @@
 # Buds
 
 ## Git workflow
-- Push directly to `main` — no feature branches
+- Push to feature branches and merge via pull requests
