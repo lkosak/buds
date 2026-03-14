@@ -1,0 +1,67 @@
+# Deploy to TestFlight
+#
+# REQUIRED GITHUB SECRETS (Settings → Secrets and variables → Actions):
+#
+#   APP_STORE_CONNECT_KEY_ID    — Key ID from App Store Connect API key
+#   APP_STORE_CONNECT_ISSUER_ID — Issuer ID from App Store Connect API key
+#   APP_STORE_CONNECT_API_KEY   — Contents of the .p8 private key file
+#   DEVELOPMENT_TEAM            — Your Apple Developer Team ID (e.g. ABC123DEF4)
+#
+# HOW TO GET THESE (requires Apple Developer Program membership, $99/year):
+#
+#   1. Sign up at developer.apple.com
+#   2. Go to appstoreconnect.apple.com → Users and Access → Integrations → App Store Connect API
+#   3. Create a new key with "App Manager" role — download the .p8 file
+#   4. Note the Key ID and Issuer ID shown on that page
+#   5. APP_STORE_CONNECT_API_KEY = the full text content of the .p8 file
+#   6. DEVELOPMENT_TEAM = your Team ID from developer.apple.com/account (top-right menu)
+#   7. Register the app: appstoreconnect.apple.com → Apps → + → New App
+#      Bundle ID: com.buds.app  |  Name: Buds
+#
+# The workflow uses Xcode's automatic signing with the API key (-allowProvisioningUpdates),
+# so no manual certificate or provisioning profile management is needed.
+
+name: Deploy to TestFlight
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Write App Store Connect API key file
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: echo "$APP_STORE_CONNECT_API_KEY" > "$RUNNER_TEMP/AuthKey.p8"
+
+      - name: Build and upload to TestFlight
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          ASC_KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+          DEVELOPMENT_TEAM: ${{ secrets.DEVELOPMENT_TEAM }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: bundle exec fastlane beta
+
+      - name: Clean up API key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8"
