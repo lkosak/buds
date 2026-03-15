@@ -4,6 +4,7 @@ struct BudRowView: View {
     let bud: Bud
     let photo: UIImage?
     let onTalked: () -> Void
+    let onTogglePin: () -> Void
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate)
@@ -41,6 +42,12 @@ struct BudRowView: View {
 
             Spacer()
 
+            if bud.isPinned {
+                Image(systemName: "pin.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
+
             // Urgency dot
             Circle()
                 .fill(urgency.color)
@@ -53,6 +60,14 @@ struct BudRowView: View {
                 Label("Talked", systemImage: "message.fill")
             }
             .tint(.green)
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                onTogglePin()
+            } label: {
+                Label(bud.isPinned ? "Unpin" : "Pin", systemImage: bud.isPinned ? "pin.slash.fill" : "pin.fill")
+            }
+            .tint(.orange)
         }
     }
 
