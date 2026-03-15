@@ -5,10 +5,19 @@ struct BudListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var buds: [Bud]
     @State private var showingContactPicker = false
+    @State private var showingSettings = false
     @State private var photoCache = ContactPhotoCache()
 
+    private var activeBuds: [Bud] {
+        buds.filter { !$0.isArchived }
+    }
+
     private var sortedBuds: [Bud] {
-        buds.sorted { a, b in
+        activeBuds.sorted { a, b in
+            // Pinned contacts always come first
+            if a.isPinned != b.isPinned {
+                return a.isPinned
+            }
             let ua = UrgencyLevel.from(lastContact: a.lastContactDate)
             let ub = UrgencyLevel.from(lastContact: b.lastContactDate)
             if ua.sortOrder != ub.sortOrder {
@@ -21,7 +30,7 @@ struct BudListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if buds.isEmpty {
+                if activeBuds.isEmpty {
                     EmptyStateView { showingContactPicker = true }
                 } else {
                     List {
@@ -43,12 +52,9 @@ struct BudListView: View {
                                         bud.interactions = [interaction]
                                     }
                                     bud.lastContactDate = interaction.date
+                                } onTogglePin: {
+                                    bud.isPinned.toggle()
                                 }
-                            }
-                        }
-                        .onDelete { offsets in
-                            for index in offsets {
-                                modelContext.delete(sortedBuds[index])
                             }
                         }
                     }
@@ -56,6 +62,13 @@ struct BudListView: View {
             }
             .navigationTitle("Buds")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showingContactPicker = true
@@ -64,10 +77,20 @@ struct BudListView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingSettings) {
+                NavigationStack {
+                    SettingsView()
+                }
+            }
             .sheet(isPresented: $showingContactPicker) {
                 ContactPickerView { contactID, name in
-                    // Avoid duplicates
-                    guard !buds.contains(where: { $0.contactID == contactID }) else { return }
+                    // If archived, unarchive instead of creating duplicate
+                    if let existing = buds.first(where: { $0.contactID == contactID }) {
+                        if existing.isArchived {
+                            existing.isArchived = false
+                        }
+                        return
+                    }
                     let bud = Bud(contactID: contactID, name: name)
                     modelContext.insert(bud)
                 }

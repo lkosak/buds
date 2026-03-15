@@ -7,6 +7,8 @@ final class Bud {
     var name: String = ""
     var lastContactDate: Date?
     var addedDate: Date = Date()
+    var isPinned: Bool = false
+    var isArchived: Bool = false
     @Relationship(deleteRule: .cascade, inverse: \ContactInteraction.bud)
     var interactions: [ContactInteraction]? = []
 

@@ -2,8 +2,10 @@ import SwiftUI
 
 struct BudDetailView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     let bud: Bud
     let photo: UIImage?
+    @State private var showingArchiveConfirmation = false
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate)
@@ -94,9 +96,29 @@ struct BudDetailView: View {
                 LabeledContent("Added", value: bud.addedDate.formatted(date: .abbreviated, time: .omitted))
                 LabeledContent("Times contacted", value: "\((bud.interactions ?? []).count)")
             }
+
+            Section {
+                Button(role: .destructive) {
+                    showingArchiveConfirmation = true
+                } label: {
+                    Label("Archive Contact", systemImage: "archivebox")
+                }
+            }
         }
         .navigationTitle(bud.name)
         .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog(
+            "Archive \(bud.name)?",
+            isPresented: $showingArchiveConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Archive", role: .destructive) {
+                bud.isArchived = true
+                dismiss()
+            }
+        } message: {
+            Text("They'll be moved to your archive. You can restore them from Settings.")
+        }
     }
 
     private func initials(for name: String) -> String {
