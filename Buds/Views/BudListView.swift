@@ -26,11 +26,20 @@ struct BudListView: View {
                 } else {
                     List {
                         ForEach(sortedBuds) { bud in
-                            BudRowView(
-                                bud: bud,
-                                photo: photoCache.photo(for: bud.contactID)
-                            ) {
-                                bud.lastContactDate = Date()
+                            NavigationLink {
+                                BudDetailView(
+                                    bud: bud,
+                                    photo: photoCache.photo(for: bud.contactID)
+                                )
+                            } label: {
+                                BudRowView(
+                                    bud: bud,
+                                    photo: photoCache.photo(for: bud.contactID)
+                                ) {
+                                    let interaction = ContactInteraction()
+                                    bud.interactions.append(interaction)
+                                    bud.lastContactDate = interaction.date
+                                }
                             }
                         }
                         .onDelete { offsets in

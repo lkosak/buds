@@ -7,6 +7,6 @@ struct BudsApp: App {
         WindowGroup {
             BudListView()
         }
-        .modelContainer(for: Bud.self)
+        .modelContainer(for: [Bud.self, ContactInteraction.self])
     }
 }
