@@ -21,6 +21,7 @@ platform :ios do
       team_id: ENV["DEVELOPMENT_TEAM"],
       path: "Buds.xcodeproj",
       code_sign_identity: "Apple Distribution",
+      profile_name: ENV["PROVISIONING_PROFILE_NAME"],
     )
 
     gym(
