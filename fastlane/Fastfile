@@ -31,6 +31,7 @@ platform :ios do
 
     pilot(
       api_key: api_key,
+      app_identifier: "io.lou.app",
       skip_waiting_for_build_processing: true,
       skip_submission: true,
     )
