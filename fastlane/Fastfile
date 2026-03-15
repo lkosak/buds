@@ -25,12 +25,7 @@ platform :ios do
     gym(
       scheme: "Buds",
       export_method: "app-store",
-      xcargs: [
-        "-allowProvisioningUpdates",
-        "-authenticationKeyPath '#{ENV["ASC_KEY_PATH"]}'",
-        "-authenticationKeyID '#{ENV["APP_STORE_CONNECT_KEY_ID"]}'",
-        "-authenticationKeyIssuerID '#{ENV["APP_STORE_CONNECT_ISSUER_ID"]}'",
-      ].join(" "),
+      xcargs: "-allowProvisioningUpdates -authenticationKeyPath #{ENV["ASC_KEY_PATH"]} -authenticationKeyID #{ENV["APP_STORE_CONNECT_KEY_ID"]} -authenticationKeyIssuerID #{ENV["APP_STORE_CONNECT_ISSUER_ID"]} DEVELOPMENT_TEAM=#{ENV["DEVELOPMENT_TEAM"]} CODE_SIGN_STYLE=Automatic",
     )
 
     pilot(
