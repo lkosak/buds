@@ -1,11 +1,10 @@
 import Contacts
 import UIKit
 
-@Observable
+@MainActor @Observable
 final class ContactPhotoCache {
     private var cache: [String: UIImage] = [:]
     private var loading: Set<String> = []
-    private let store = CNContactStore()
 
     func photo(for contactID: String) -> UIImage? {
         if let cached = cache[contactID] {
@@ -20,15 +19,14 @@ final class ContactPhotoCache {
         loading.insert(contactID)
 
         Task {
-            let image = await fetchPhoto(contactID: contactID)
-            await MainActor.run {
-                self.cache[contactID] = image
-                self.loading.remove(contactID)
-            }
+            let image = await Self.fetchPhoto(contactID: contactID)
+            self.cache[contactID] = image
+            self.loading.remove(contactID)
         }
     }
 
-    private func fetchPhoto(contactID: String) async -> UIImage? {
+    private static func fetchPhoto(contactID: String) async -> UIImage? {
+        let store = CNContactStore()
         do {
             let contact = try store.unifiedContact(
                 withIdentifier: contactID,
