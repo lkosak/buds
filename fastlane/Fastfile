@@ -15,17 +15,17 @@ platform :ios do
       xcodeproj: "Buds.xcodeproj",
     )
 
-    # Set the team ID in the project for cloud signing on CI
+    # Use manual signing with the certificate and profile installed by CI
     update_code_signing_settings(
-      use_automatic_signing: true,
+      use_automatic_signing: false,
       team_id: ENV["DEVELOPMENT_TEAM"],
       path: "Buds.xcodeproj",
+      code_sign_identity: "Apple Distribution",
     )
 
     gym(
       scheme: "Buds",
       export_method: "app-store",
-      xcargs: "-allowProvisioningUpdates -authenticationKeyPath #{ENV["ASC_KEY_PATH"]} -authenticationKeyID #{ENV["APP_STORE_CONNECT_KEY_ID"]} -authenticationKeyIssuerID #{ENV["APP_STORE_CONNECT_ISSUER_ID"]} DEVELOPMENT_TEAM=#{ENV["DEVELOPMENT_TEAM"]} CODE_SIGN_STYLE=Automatic",
     )
 
     pilot(
