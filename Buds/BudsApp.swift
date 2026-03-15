@@ -3,10 +3,17 @@ import SwiftUI
 
 @main
 struct BudsApp: App {
+    var container: ModelContainer
+
+    init() {
+        let config = ModelConfiguration("Buds", cloudKitDatabase: .automatic)
+        container = try! ModelContainer(for: Bud.self, ContactInteraction.self, configurations: config)
+    }
+
     var body: some Scene {
         WindowGroup {
             BudListView()
         }
-        .modelContainer(for: [Bud.self, ContactInteraction.self])
+        .modelContainer(container)
     }
 }
