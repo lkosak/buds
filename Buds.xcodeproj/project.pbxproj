@@ -16,6 +16,8 @@
 		A10000000000005A /* BudRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000005B /* BudRowView.swift */; };
 		A10000000000006A /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000006B /* EmptyStateView.swift */; };
 		A10000000000007A /* ContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000007B /* ContactPickerView.swift */; };
+		A10000000000009A /* ContactInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000009B /* ContactInteraction.swift */; };
+		A1000000000000AA /* BudDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000AB /* BudDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		A10000000000006B /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		A10000000000007B /* ContactPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPickerView.swift; sourceTree = "<group>"; };
 		A10000000000008B /* Buds.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Buds.entitlements; sourceTree = "<group>"; };
+		A10000000000009B /* ContactInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInteraction.swift; sourceTree = "<group>"; };
+		A1000000000000AB /* BudDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000001B /* Bud.swift */,
+				A10000000000009B /* ContactInteraction.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -85,6 +90,7 @@
 			children = (
 				A10000000000004B /* BudListView.swift */,
 				A10000000000005B /* BudRowView.swift */,
+				A1000000000000AB /* BudDetailView.swift */,
 				A10000000000006B /* EmptyStateView.swift */,
 				A10000000000007B /* ContactPickerView.swift */,
 			);
@@ -177,6 +183,8 @@
 				A10000000000005A /* BudRowView.swift in Sources */,
 				A10000000000006A /* EmptyStateView.swift in Sources */,
 				A10000000000007A /* ContactPickerView.swift in Sources */,
+				A10000000000009A /* ContactInteraction.swift in Sources */,
+				A1000000000000AA /* BudDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
