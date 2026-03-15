@@ -19,5 +19,8 @@ fastlane/*.ipa
 .bundle/
 vendor/
 
+# Claude Code
+.claude/
+
 # macOS
 .DS_Store
