@@ -83,6 +83,10 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+          # Extract provisioning profile name for Fastlane
+          PP_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< "$(/usr/bin/security cms -D -i $PP_PATH)")
+          echo "PROVISIONING_PROFILE_NAME=$PP_NAME" >> $GITHUB_ENV
+
       - name: Write App Store Connect API key file
         env:
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
@@ -94,6 +98,7 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
           DEVELOPMENT_TEAM: ${{ secrets.DEVELOPMENT_TEAM }}
+          PROVISIONING_PROFILE_NAME: ${{ env.PROVISIONING_PROFILE_NAME }}
           BUILD_NUMBER: ${{ github.run_number }}
         run: bundle exec fastlane beta
 
