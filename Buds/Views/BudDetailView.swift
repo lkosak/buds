@@ -10,7 +10,7 @@ struct BudDetailView: View {
     }
 
     private var sortedInteractions: [ContactInteraction] {
-        bud.interactions.sorted { $0.date > $1.date }
+        (bud.interactions ?? []).sorted { $0.date > $1.date }
     }
 
     var body: some View {
@@ -57,7 +57,11 @@ struct BudDetailView: View {
             Section {
                 Button {
                     let interaction = ContactInteraction()
-                    bud.interactions.append(interaction)
+                    if bud.interactions != nil {
+                        bud.interactions!.append(interaction)
+                    } else {
+                        bud.interactions = [interaction]
+                    }
                     bud.lastContactDate = interaction.date
                 } label: {
                     Label("Log Contact", systemImage: "message.fill")
@@ -88,7 +92,7 @@ struct BudDetailView: View {
 
             Section("Details") {
                 LabeledContent("Added", value: bud.addedDate.formatted(date: .abbreviated, time: .omitted))
-                LabeledContent("Times contacted", value: "\(bud.interactions.count)")
+                LabeledContent("Times contacted", value: "\((bud.interactions ?? []).count)")
             }
         }
         .navigationTitle(bud.name)

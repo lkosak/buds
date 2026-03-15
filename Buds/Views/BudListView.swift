@@ -37,7 +37,11 @@ struct BudListView: View {
                                     photo: photoCache.photo(for: bud.contactID)
                                 ) {
                                     let interaction = ContactInteraction()
-                                    bud.interactions.append(interaction)
+                                    if bud.interactions != nil {
+                                        bud.interactions!.append(interaction)
+                                    } else {
+                                        bud.interactions = [interaction]
+                                    }
                                     bud.lastContactDate = interaction.date
                                 }
                             }
