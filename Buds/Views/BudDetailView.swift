@@ -104,6 +104,14 @@ struct BudDetailView: View {
                     Label("Archive Contact", systemImage: "archivebox")
                 }
             }
+
+            Section {
+                Button(role: .destructive) {
+                    showingArchiveConfirmation = true
+                } label: {
+                    Label("Archive Contact", systemImage: "archivebox")
+                }
+            }
         }
         .navigationTitle(bud.name)
         .navigationBarTitleDisplayMode(.inline)
