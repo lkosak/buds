@@ -6,6 +6,8 @@ struct BudDetailView: View {
     let bud: Bud
     let photo: UIImage?
     @State private var showingArchiveConfirmation = false
+    @State private var interactionToEdit: ContactInteraction?
+    @State private var newInteraction: ContactInteraction?
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate)
@@ -58,15 +60,14 @@ struct BudDetailView: View {
 
             Section {
                 Button {
-                    let interaction = ContactInteraction()
-                    if bud.interactions != nil {
-                        bud.interactions!.append(interaction)
-                    } else {
-                        bud.interactions = [interaction]
-                    }
-                    bud.lastContactDate = interaction.date
+                    logNewInteraction()
                 } label: {
-                    Label("Log Contact", systemImage: "message.fill")
+                    Label("Log Contact Now", systemImage: "message.fill")
+                }
+                Button {
+                    logPastInteraction()
+                } label: {
+                    Label("Log Past Contact...", systemImage: "clock.arrow.circlepath")
                 }
             }
 
@@ -76,18 +77,19 @@ struct BudDetailView: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(sortedInteractions) { interaction in
-                        HStack {
-                            Image(systemName: "message.fill")
-                                .foregroundStyle(.green)
-                                .font(.caption)
-                            Text(interaction.date.formatted(date: .abbreviated, time: .shortened))
+                        Button {
+                            interactionToEdit = interaction
+                        } label: {
+                            InteractionRowView(interaction: interaction)
                         }
+                        .tint(.primary)
                     }
                     .onDelete { offsets in
                         for index in offsets {
                             let interaction = sortedInteractions[index]
                             modelContext.delete(interaction)
                         }
+                        updateLastContact()
                     }
                 }
             }
@@ -119,6 +121,40 @@ struct BudDetailView: View {
         } message: {
             Text("They'll be moved to your archive. You can restore them from Settings.")
         }
+        .sheet(item: $interactionToEdit) { interaction in
+            NavigationStack {
+                InteractionDetailView(interaction: interaction)
+            }
+        }
+        .sheet(item: $newInteraction) { interaction in
+            NavigationStack {
+                InteractionDetailView(interaction: interaction, isNew: true)
+            }
+        }
+    }
+
+    private func logNewInteraction() {
+        let interaction = ContactInteraction()
+        appendInteraction(interaction)
+        bud.lastContactDate = interaction.date
+    }
+
+    private func logPastInteraction() {
+        let interaction = ContactInteraction()
+        appendInteraction(interaction)
+        newInteraction = interaction
+    }
+
+    private func appendInteraction(_ interaction: ContactInteraction) {
+        if bud.interactions != nil {
+            bud.interactions!.append(interaction)
+        } else {
+            bud.interactions = [interaction]
+        }
+    }
+
+    private func updateLastContact() {
+        bud.lastContactDate = (bud.interactions ?? []).map(\.date).max()
     }
 
     private func initials(for name: String) -> String {
@@ -126,5 +162,38 @@ struct BudDetailView: View {
         let first = parts.first?.prefix(1) ?? ""
         let last = parts.count > 1 ? parts.last!.prefix(1) : ""
         return "\(first)\(last)".uppercased()
+    }
+}
+
+private struct InteractionRowView: View {
+    let interaction: ContactInteraction
+
+    var body: some View {
+        HStack {
+            Image(systemName: interaction.channel?.systemImage ?? "message.fill")
+                .foregroundStyle(.green)
+                .font(.caption)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(interaction.date.formatted(date: .abbreviated, time: .shortened))
+                    if let channel = interaction.channel {
+                        Text("· \(channel.rawValue)")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .font(.subheadline)
+                if let note = interaction.note, !note.isEmpty {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
     }
 }
