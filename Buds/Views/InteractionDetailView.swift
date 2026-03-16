@@ -22,7 +22,7 @@ struct InteractionDetailView: View {
     var body: some View {
         Form {
             Section {
-                DatePicker("Date", selection: $date)
+                DatePicker("Date", selection: $date, displayedComponents: .date)
             }
 
             Section("Channel") {
@@ -85,7 +85,7 @@ struct InteractionDetailView: View {
     }
 
     private func save() {
-        interaction.date = date
+        interaction.date = Calendar.current.startOfDay(for: date)
         interaction.channel = channel
         interaction.note = note.isEmpty ? nil : note
         updateBudLastContact()

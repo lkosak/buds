@@ -45,7 +45,10 @@ enum UrgencyLevel: Comparable {
 
 func relativeTimeString(from date: Date?) -> String {
     guard let date = date else { return "never" }
-    let formatter = RelativeDateTimeFormatter()
-    formatter.unitsStyle = .full
-    return formatter.localizedString(for: date, relativeTo: Date())
+    let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
+    switch days {
+    case 0: return "today"
+    case 1: return "yesterday"
+    default: return "\(days) days ago"
+    }
 }
