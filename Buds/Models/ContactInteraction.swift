@@ -31,8 +31,8 @@ final class ContactInteraction {
         set { channelRaw = newValue?.rawValue }
     }
 
-    init(date: Date = Date(), channel: ContactChannel? = nil, note: String? = nil) {
-        self.date = date
+    init(date: Date = Calendar.current.startOfDay(for: Date()), channel: ContactChannel? = nil, note: String? = nil) {
+        self.date = Calendar.current.startOfDay(for: date)
         self.channelRaw = channel?.rawValue
         self.note = note
     }

@@ -136,7 +136,7 @@ struct BudDetailView: View {
     private func logNewInteraction() {
         let interaction = ContactInteraction()
         appendInteraction(interaction)
-        bud.lastContactDate = interaction.date
+        bud.lastContactDate = Calendar.current.startOfDay(for: interaction.date)
     }
 
     private func logPastInteraction() {
@@ -176,7 +176,7 @@ private struct InteractionRowView: View {
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(interaction.date.formatted(date: .abbreviated, time: .shortened))
+                    Text(interaction.date.formatted(date: .abbreviated, time: .omitted))
                     if let channel = interaction.channel {
                         Text("· \(channel.rawValue)")
                             .foregroundStyle(.secondary)

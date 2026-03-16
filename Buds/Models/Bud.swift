@@ -15,6 +15,6 @@ final class Bud {
     init(contactID: String, name: String) {
         self.contactID = contactID
         self.name = name
-        self.addedDate = Date()
+        self.addedDate = Calendar.current.startOfDay(for: Date())
     }
 }
