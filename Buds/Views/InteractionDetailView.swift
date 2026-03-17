@@ -77,8 +77,14 @@ struct InteractionDetailView: View {
         }
         .confirmationDialog("Delete this interaction?", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
+                let bud = interaction.bud
                 modelContext.delete(interaction)
-                updateBudLastContact()
+                if let bud {
+                    bud.lastContactDate = (bud.interactions ?? [])
+                        .filter { $0.persistentModelID != interaction.persistentModelID }
+                        .map(\.date)
+                        .max()
+                }
                 dismiss()
             }
         }
@@ -94,10 +100,6 @@ struct InteractionDetailView: View {
 
     private func updateBudLastContact() {
         guard let bud = interaction.bud else { return }
-        let latest = (bud.interactions ?? [])
-            .filter { $0.persistentModelID != interaction.persistentModelID || !showingDeleteConfirmation }
-            .map(\.date)
-            .max()
-        bud.lastContactDate = latest
+        bud.lastContactDate = (bud.interactions ?? []).map(\.date).max()
     }
 }
