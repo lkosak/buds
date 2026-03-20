@@ -74,7 +74,9 @@ struct BudListView: View {
                                         .foregroundStyle(.secondary)
                                         .frame(maxWidth: .infinity, alignment: .center)
                                 }
+                                .listRowBackground(Color.clear)
                             }
+                            .listSectionSpacing(4)
                         }
                     }
                     .listStyle(.insetGrouped)
