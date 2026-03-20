@@ -19,28 +19,24 @@ enum UrgencyLevel: Comparable {
         }
     }
 
-    var sortOrder: Int {
-        switch self {
-        case .lost: return 0
-        case .urgent: return 1
-        case .stale: return 2
-        case .okay: return 3
-        case .unknown: return 4
-        case .fresh: return 5
+    static func from(lastContact: Date?, cadenceDays: Int) -> UrgencyLevel {
+        guard let ratio = urgencyRatio(lastContact: lastContact, cadenceDays: cadenceDays) else {
+            return .unknown
         }
-    }
-
-    static func from(lastContact: Date?) -> UrgencyLevel {
-        guard let date = lastContact else { return .unknown }
-        let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
-        switch days {
-        case ..<3: return .fresh
-        case 3..<7: return .okay
-        case 7..<14: return .stale
-        case 14..<28: return .urgent
+        switch ratio {
+        case ..<0.95: return .fresh
+        case 0.95..<1.0: return .okay
+        case 1.0..<1.25: return .stale
+        case 1.25..<1.5: return .urgent
         default: return .lost
         }
     }
+}
+
+func urgencyRatio(lastContact: Date?, cadenceDays: Int) -> Double? {
+    guard let date = lastContact else { return nil }
+    let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
+    return Double(days) / Double(cadenceDays)
 }
 
 func relativeTimeString(from date: Date?) -> String {

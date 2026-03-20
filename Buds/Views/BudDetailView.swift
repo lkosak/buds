@@ -10,7 +10,18 @@ struct BudDetailView: View {
     @State private var newInteraction: ContactInteraction?
 
     private var urgency: UrgencyLevel {
-        .from(lastContact: bud.lastContactDate)
+        .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
+    }
+
+    private let cadenceOptions = [90, 180, 365]
+
+    private func cadenceLabel(_ days: Int) -> String {
+        switch days {
+        case 90: return "Every 3 months"
+        case 180: return "Every 6 months"
+        case 365: return "Every 12 months"
+        default: return "Every \(days) days"
+        }
     }
 
     private var sortedInteractions: [ContactInteraction] {
@@ -90,6 +101,24 @@ struct BudDetailView: View {
                             modelContext.delete(interaction)
                         }
                         updateLastContact()
+                    }
+                }
+            }
+
+            Section("Check-in Frequency") {
+                ForEach(cadenceOptions, id: \.self) { days in
+                    Button {
+                        bud.contactCadenceDays = days
+                    } label: {
+                        HStack {
+                            Text(cadenceLabel(days))
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if bud.contactCadenceDays == days {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.blue)
+                            }
+                        }
                     }
                 }
             }
