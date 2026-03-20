@@ -8,6 +8,7 @@ struct BudListView: View {
     @State private var showingContactPicker = false
     @State private var showingSettings = false
     @State private var photoCache = ContactPhotoCache()
+    @State private var showingAllBuds = false
 
     private let profiles = ["Personal", "Professional"]
 
@@ -15,19 +16,34 @@ struct BudListView: View {
         buds.filter { !$0.isArchived && $0.profileName == activeProfile }
     }
 
-    private var sortedBuds: [Bud] {
-        activeBuds.sorted { a, b in
-            // Pinned contacts always come first
-            if a.isPinned != b.isPinned {
-                return a.isPinned
+    // Ratio >= 0.95 or never contacted: show in main list
+    private var dueBuds: [Bud] {
+        activeBuds
+            .filter { bud in
+                let ratio = urgencyRatio(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
+                return ratio == nil || ratio! >= 0.95
             }
-            let ua = UrgencyLevel.from(lastContact: a.lastContactDate)
-            let ub = UrgencyLevel.from(lastContact: b.lastContactDate)
-            if ua.sortOrder != ub.sortOrder {
-                return ua.sortOrder < ub.sortOrder
+            .sorted { a, b in
+                if a.isPinned != b.isPinned { return a.isPinned }
+                let ra = urgencyRatio(lastContact: a.lastContactDate, cadenceDays: a.contactCadenceDays) ?? Double.infinity
+                let rb = urgencyRatio(lastContact: b.lastContactDate, cadenceDays: b.contactCadenceDays) ?? Double.infinity
+                return ra > rb
             }
-            return (a.lastContactDate ?? .distantPast) < (b.lastContactDate ?? .distantPast)
-        }
+    }
+
+    // Ratio < 0.95: hidden behind See All
+    private var notDueBuds: [Bud] {
+        activeBuds
+            .filter { bud in
+                guard let ratio = urgencyRatio(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays) else { return false }
+                return ratio < 0.95
+            }
+            .sorted { a, b in
+                if a.isPinned != b.isPinned { return a.isPinned }
+                let ra = urgencyRatio(lastContact: a.lastContactDate, cadenceDays: a.contactCadenceDays) ?? 0
+                let rb = urgencyRatio(lastContact: b.lastContactDate, cadenceDays: b.contactCadenceDays) ?? 0
+                return ra > rb
+            }
     }
 
     var body: some View {
@@ -37,27 +53,34 @@ struct BudListView: View {
                     EmptyStateView { showingContactPicker = true }
                 } else {
                     List {
-                        ForEach(sortedBuds) { bud in
-                            NavigationLink {
-                                BudDetailView(
-                                    bud: bud,
-                                    photo: photoCache.photo(for: bud.contactID)
-                                )
-                            } label: {
-                                BudRowView(
-                                    bud: bud,
-                                    photo: photoCache.photo(for: bud.contactID)
-                                ) {
-                                    let interaction = ContactInteraction()
-                                    if bud.interactions != nil {
-                                        bud.interactions!.append(interaction)
-                                    } else {
-                                        bud.interactions = [interaction]
-                                    }
-                                    bud.lastContactDate = interaction.date
-                                } onTogglePin: {
-                                    bud.isPinned.toggle()
+                        ForEach(dueBuds) { bud in
+                            budRow(bud)
+                        }
+
+                        if !notDueBuds.isEmpty {
+                            if showingAllBuds {
+                                ForEach(notDueBuds) { bud in
+                                    budRow(bud)
                                 }
+                                Button {
+                                    showingAllBuds = false
+                                } label: {
+                                    Text("Show fewer")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                }
+                                .listRowBackground(Color.clear)
+                            } else {
+                                Button {
+                                    showingAllBuds = true
+                                } label: {
+                                    Text("\(notDueBuds.count) more not due yet")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                }
+                                .listRowBackground(Color.clear)
                             }
                         }
                     }
@@ -110,7 +133,6 @@ struct BudListView: View {
             }
             .sheet(isPresented: $showingContactPicker) {
                 ContactPickerView { contactID, name in
-                    // If already exists in this profile, unarchive if archived
                     if let existing = buds.first(where: {
                         $0.contactID == contactID && $0.profileName == activeProfile
                     }) {
@@ -123,6 +145,31 @@ struct BudListView: View {
                     bud.profileName = activeProfile
                     modelContext.insert(bud)
                 }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func budRow(_ bud: Bud) -> some View {
+        NavigationLink {
+            BudDetailView(
+                bud: bud,
+                photo: photoCache.photo(for: bud.contactID)
+            )
+        } label: {
+            BudRowView(
+                bud: bud,
+                photo: photoCache.photo(for: bud.contactID)
+            ) {
+                let interaction = ContactInteraction()
+                if bud.interactions != nil {
+                    bud.interactions!.append(interaction)
+                } else {
+                    bud.interactions = [interaction]
+                }
+                bud.lastContactDate = interaction.date
+            } onTogglePin: {
+                bud.isPinned.toggle()
             }
         }
     }

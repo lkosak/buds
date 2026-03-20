@@ -7,7 +7,7 @@ struct BudRowView: View {
     let onTogglePin: () -> Void
 
     private var urgency: UrgencyLevel {
-        .from(lastContact: bud.lastContactDate)
+        .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
     }
 
     var body: some View {
