@@ -53,38 +53,32 @@ struct BudListView: View {
                     EmptyStateView { showingContactPicker = true }
                 } else {
                     List {
-                        ForEach(dueBuds) { bud in
-                            budRow(bud)
-                        }
-
-                        if !notDueBuds.isEmpty {
+                        Section {
+                            ForEach(dueBuds) { bud in
+                                budRow(bud)
+                            }
                             if showingAllBuds {
                                 ForEach(notDueBuds) { bud in
                                     budRow(bud)
                                 }
+                            }
+                        }
+
+                        if !notDueBuds.isEmpty {
+                            Section {
                                 Button {
-                                    withAnimation { showingAllBuds = false }
+                                    withAnimation { showingAllBuds.toggle() }
                                 } label: {
-                                    Text("Show fewer")
+                                    Text(showingAllBuds ? "Show fewer" : "\(notDueBuds.count) more not due yet")
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                         .frame(maxWidth: .infinity, alignment: .center)
                                 }
-                                .listRowBackground(Color.clear)
-                            } else {
-                                Button {
-                                    withAnimation { showingAllBuds = true }
-                                } label: {
-                                    Text("\(notDueBuds.count) more not due yet")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                }
-                                .listRowBackground(Color.clear)
                             }
                         }
                     }
                     .listStyle(.insetGrouped)
+                    .animation(.default, value: showingAllBuds)
                 }
             }
             .toolbar {
