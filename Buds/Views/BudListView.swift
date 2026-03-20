@@ -76,6 +76,7 @@ struct BudListView: View {
                                 }
                                 .listRowBackground(Color.clear)
                             }
+                            .listSectionSpacing(4)
                         }
                     }
                     .listStyle(.insetGrouped)
