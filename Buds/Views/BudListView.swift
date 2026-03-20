@@ -63,7 +63,7 @@ struct BudListView: View {
                                     budRow(bud)
                                 }
                                 Button {
-                                    showingAllBuds = false
+                                    withAnimation { showingAllBuds = false }
                                 } label: {
                                     Text("Show fewer")
                                         .font(.subheadline)
@@ -73,7 +73,7 @@ struct BudListView: View {
                                 .listRowBackground(Color.clear)
                             } else {
                                 Button {
-                                    showingAllBuds = true
+                                    withAnimation { showingAllBuds = true }
                                 } label: {
                                     Text("\(notDueBuds.count) more not due yet")
                                         .font(.subheadline)
@@ -84,6 +84,7 @@ struct BudListView: View {
                             }
                         }
                     }
+                    .listStyle(.insetGrouped)
                 }
             }
             .toolbar {
