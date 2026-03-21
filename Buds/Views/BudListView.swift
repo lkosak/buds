@@ -7,49 +7,39 @@ struct BudListView: View {
     @AppStorage("activeProfile") private var activeProfile = "Personal"
     @State private var showingContactPicker = false
     @State private var showingSettings = false
-    @State private var photoCache = ContactPhotoCache()
     @State private var showingAllBuds = false
 
     private let profiles = ["Personal", "Professional"]
 
-    private var activeBuds: [Bud] {
-        buds.filter { !$0.isArchived && $0.profileName == activeProfile }
-    }
+    // Single pass: compute ratio once per bud, partition, then sort each group.
+    private var processedBuds: (due: [Bud], notDue: [Bud]) {
+        var dueEntries: [(bud: Bud, ratio: Double)] = []
+        var notDueEntries: [(bud: Bud, ratio: Double)] = []
 
-    // Ratio >= 0.95 or never contacted: show in main list
-    private var dueBuds: [Bud] {
-        activeBuds
-            .filter { bud in
-                let ratio = urgencyRatio(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
-                return ratio == nil || ratio! >= 0.95
+        for bud in buds where !bud.isArchived && bud.profileName == activeProfile {
+            let ratio = urgencyRatio(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays) ?? Double.infinity
+            if ratio >= 0.95 {
+                dueEntries.append((bud, ratio))
+            } else {
+                notDueEntries.append((bud, ratio))
             }
-            .sorted { a, b in
-                if a.isPinned != b.isPinned { return a.isPinned }
-                let ra = urgencyRatio(lastContact: a.lastContactDate, cadenceDays: a.contactCadenceDays) ?? Double.infinity
-                let rb = urgencyRatio(lastContact: b.lastContactDate, cadenceDays: b.contactCadenceDays) ?? Double.infinity
-                return ra > rb
-            }
-    }
+        }
 
-    // Ratio < 0.95: hidden behind See All
-    private var notDueBuds: [Bud] {
-        activeBuds
-            .filter { bud in
-                guard let ratio = urgencyRatio(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays) else { return false }
-                return ratio < 0.95
-            }
-            .sorted { a, b in
-                if a.isPinned != b.isPinned { return a.isPinned }
-                let ra = urgencyRatio(lastContact: a.lastContactDate, cadenceDays: a.contactCadenceDays) ?? 0
-                let rb = urgencyRatio(lastContact: b.lastContactDate, cadenceDays: b.contactCadenceDays) ?? 0
-                return ra > rb
-            }
+        let byUrgency: ((bud: Bud, ratio: Double), (bud: Bud, ratio: Double)) -> Bool = { a, b in
+            if a.bud.isPinned != b.bud.isPinned { return a.bud.isPinned }
+            return a.ratio > b.ratio
+        }
+        dueEntries.sort(by: byUrgency)
+        notDueEntries.sort(by: byUrgency)
+
+        return (dueEntries.map(\.bud), notDueEntries.map(\.bud))
     }
 
     var body: some View {
+        let (dueBuds, notDueBuds) = processedBuds
         NavigationStack {
             Group {
-                if activeBuds.isEmpty {
+                if dueBuds.isEmpty && notDueBuds.isEmpty {
                     EmptyStateView { showingContactPicker = true }
                 } else {
                     List {
@@ -150,13 +140,10 @@ struct BudListView: View {
         NavigationLink {
             BudDetailView(
                 bud: bud,
-                photo: photoCache.photo(for: bud.contactID)
+                photo: ContactPhotoCache.shared.cachedPhoto(for: bud.contactID)
             )
         } label: {
-            BudRowView(
-                bud: bud,
-                photo: photoCache.photo(for: bud.contactID)
-            ) {
+            BudRowView(bud: bud) {
                 let interaction = ContactInteraction()
                 if bud.interactions != nil {
                     bud.interactions!.append(interaction)
