@@ -71,7 +71,7 @@ struct BudListView: View {
                                 } label: {
                                     Text(showingAllBuds ? "Show fewer" : "\(notDueBuds.count) more not due yet")
                                         .font(.subheadline)
-                                        .foregroundStyle(.tertiary)
+                                        .foregroundStyle(.secondary)
                                         .frame(maxWidth: .infinity, alignment: .center)
                                 }
                                 .listRowBackground(Color.clear)
@@ -80,7 +80,6 @@ struct BudListView: View {
                         }
                     }
                     .listStyle(.insetGrouped)
-                    .animation(.default, value: showingAllBuds)
                 }
             }
             .toolbar {
