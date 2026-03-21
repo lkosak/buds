@@ -3,29 +3,36 @@ import UIKit
 
 @MainActor @Observable
 final class ContactPhotoCache {
-    private var cache: [String: UIImage] = [:]
-    private var loading: Set<String> = []
+    static let shared = ContactPhotoCache()
 
-    func photo(for contactID: String) -> UIImage? {
+    private var cache: [String: UIImage?] = [:]
+    private var inFlight: [String: Task<UIImage?, Never>] = [:]
+
+    private init() {}
+
+    func fetch(for contactID: String) async -> UIImage? {
         if let cached = cache[contactID] {
             return cached
         }
-        loadPhoto(for: contactID)
-        return nil
-    }
-
-    private func loadPhoto(for contactID: String) {
-        guard !loading.contains(contactID) else { return }
-        loading.insert(contactID)
-
-        Task {
-            let image = await Self.fetchPhoto(contactID: contactID)
-            self.cache[contactID] = image
-            self.loading.remove(contactID)
+        if let task = inFlight[contactID] {
+            return await task.value
         }
+        let task = Task<UIImage?, Never> {
+            await Self.fetchFromContacts(contactID: contactID)
+        }
+        inFlight[contactID] = task
+        let image = await task.value
+        cache[contactID] = image
+        inFlight.removeValue(forKey: contactID)
+        return image
     }
 
-    private static func fetchPhoto(contactID: String) async -> UIImage? {
+    // Synchronous check without triggering a load – used by detail view after photo is already cached
+    func cachedPhoto(for contactID: String) -> UIImage? {
+        cache[contactID] ?? nil
+    }
+
+    private static func fetchFromContacts(contactID: String) async -> UIImage? {
         let store = CNContactStore()
         do {
             let contact = try store.unifiedContact(

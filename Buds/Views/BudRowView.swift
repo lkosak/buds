@@ -2,9 +2,10 @@ import SwiftUI
 
 struct BudRowView: View {
     let bud: Bud
-    let photo: UIImage?
     let onTalked: () -> Void
     let onTogglePin: () -> Void
+
+    @State private var photo: UIImage?
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
@@ -68,6 +69,9 @@ struct BudRowView: View {
                 Label(bud.isPinned ? "Unpin" : "Pin", systemImage: bud.isPinned ? "pin.slash.fill" : "pin.fill")
             }
             .tint(.orange)
+        }
+        .task(id: bud.contactID) {
+            photo = await ContactPhotoCache.shared.fetch(for: bud.contactID)
         }
     }
 
