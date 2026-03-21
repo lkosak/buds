@@ -20,6 +20,7 @@
 		A1000000000000AA /* BudDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000AB /* BudDetailView.swift */; };
 		A1000000000000BA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000BB /* SettingsView.swift */; };
 		A1000000000000CA /* InteractionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000CB /* InteractionDetailView.swift */; };
+		A1000000000000DA /* BudTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000DB /* BudTransfer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		A1000000000000AB /* BudDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudDetailView.swift; sourceTree = "<group>"; };
 		A1000000000000BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1000000000000CB /* InteractionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionDetailView.swift; sourceTree = "<group>"; };
+		A1000000000000DB /* BudTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudTransfer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 			children = (
 				A10000000000002B /* TimeFormatting.swift */,
 				A10000000000003B /* ContactPhotoCache.swift */,
+				A1000000000000DB /* BudTransfer.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -193,6 +196,7 @@
 				A1000000000000AA /* BudDetailView.swift in Sources */,
 				A1000000000000BA /* SettingsView.swift in Sources */,
 				A1000000000000CA /* InteractionDetailView.swift in Sources */,
+				A1000000000000DA /* BudTransfer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
