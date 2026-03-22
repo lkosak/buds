@@ -81,15 +81,7 @@ struct BudDetailView: View {
                 .listRowBackground(Color.clear)
             }
 
-            Section {
-                Button {
-                    logContact()
-                } label: {
-                    Label("Log Contact", systemImage: "message.fill")
-                }
-            }
-
-            Section("History") {
+            Section("Contact History") {
                 if sortedInteractions.isEmpty {
                     Text("No contact history yet")
                         .foregroundStyle(.secondary)
@@ -109,6 +101,11 @@ struct BudDetailView: View {
                         }
                         updateLastContact()
                     }
+                }
+                Button {
+                    logContact()
+                } label: {
+                    Label("Log Contact", systemImage: "message.fill")
                 }
             }
 
