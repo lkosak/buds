@@ -158,6 +158,15 @@ struct BudDetailView: View {
                     .lineLimit(3...)
             }
 
+            Section("Target Frequency") {
+                Picker("Frequency", selection: Bindable(bud).contactCadenceDays) {
+                    ForEach(cadenceOptions, id: \.self) { days in
+                        Text(cadenceLabel(days)).tag(days)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
             Section("Details") {
                 if loadingBirthday {
                     LabeledContent("Birthday") {
@@ -181,12 +190,6 @@ struct BudDetailView: View {
                         .foregroundStyle(.primary)
                     }
                 }
-                Picker("Frequency", selection: Bindable(bud).contactCadenceDays) {
-                    ForEach(cadenceOptions, id: \.self) { days in
-                        Text(cadenceLabel(days)).tag(days)
-                    }
-                }
-                .pickerStyle(.segmented)
                 LabeledContent("Added", value: bud.addedDate.formatted(date: .abbreviated, time: .omitted))
                 LabeledContent("Times contacted", value: "\((bud.interactions ?? []).count)")
             }
