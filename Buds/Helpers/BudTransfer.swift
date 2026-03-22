@@ -20,11 +20,17 @@ struct BudsBackup: Codable {
         var profileName: String
         var contactCadenceDays: Int
         var interactions: [InteractionExport]
+        var events: [EventExport] = []
 
         struct InteractionExport: Codable {
             var date: Date
             var channelRaw: String?
             var note: String?
+        }
+
+        struct EventExport: Codable {
+            var date: Date
+            var note: String
         }
     }
 }
@@ -44,6 +50,9 @@ func makeBackupData(context: ModelContext) throws -> Data {
             contactCadenceDays: bud.contactCadenceDays,
             interactions: (bud.interactions ?? []).map {
                 BudsBackup.BudExport.InteractionExport(date: $0.date, channelRaw: $0.channelRaw, note: $0.note)
+            },
+            events: (bud.events ?? []).map {
+                BudsBackup.BudExport.EventExport(date: $0.date, note: $0.note)
             }
         )
     }
@@ -81,6 +90,11 @@ func restoreBackup(from data: Data, context: ModelContext) throws -> Int {
             )
             interaction.bud = bud
             context.insert(interaction)
+        }
+        for e in b.events {
+            let event = Event(date: e.date, note: e.note)
+            event.bud = bud
+            context.insert(event)
         }
         count += 1
     }

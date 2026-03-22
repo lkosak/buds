@@ -9,8 +9,6 @@ struct BudListView: View {
     @State private var showingSettings = false
     @State private var showingAllBuds = false
 
-    private let profiles = ["Personal", "Professional"]
-
     // Single pass: compute ratio once per bud, partition, then sort each group.
     private var processedBuds: (due: [Bud], notDue: [Bud]) {
         var dueEntries: [(bud: Bud, ratio: Double)] = []
@@ -37,100 +35,67 @@ struct BudListView: View {
 
     var body: some View {
         let (dueBuds, notDueBuds) = processedBuds
-        NavigationStack {
-            Group {
-                if dueBuds.isEmpty && notDueBuds.isEmpty {
-                    EmptyStateView { showingContactPicker = true }
-                } else {
-                    List {
-                        Section {
-                            ForEach(dueBuds) { bud in
+        Group {
+            if dueBuds.isEmpty && notDueBuds.isEmpty {
+                EmptyStateView { showingContactPicker = true }
+            } else {
+                List {
+                    Section {
+                        ForEach(dueBuds) { bud in
+                            budRow(bud)
+                        }
+                        if showingAllBuds {
+                            ForEach(notDueBuds) { bud in
                                 budRow(bud)
                             }
-                            if showingAllBuds {
-                                ForEach(notDueBuds) { bud in
-                                    budRow(bud)
-                                }
-                            }
                         }
+                    }
 
-                        if !notDueBuds.isEmpty {
-                            Section {
-                                Button {
-                                    withAnimation { showingAllBuds.toggle() }
-                                } label: {
-                                    Text(showingAllBuds ? "Show fewer" : "\(notDueBuds.count) more not due yet")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                }
-                                .listRowBackground(Color.clear)
-                            }
-                            .listSectionSpacing(4)
-                        }
-                    }
-                    .listStyle(.insetGrouped)
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
-                }
-                ToolbarItem(placement: .principal) {
-                    Menu {
-                        ForEach(profiles, id: \.self) { profile in
+                    if !notDueBuds.isEmpty {
+                        Section {
                             Button {
-                                activeProfile = profile
+                                withAnimation { showingAllBuds.toggle() }
                             } label: {
-                                if profile == activeProfile {
-                                    Label(profile, systemImage: "checkmark")
-                                } else {
-                                    Text(profile)
-                                }
+                                Text(showingAllBuds ? "Show fewer" : "\(notDueBuds.count) more not due yet")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .center)
                             }
+                            .listRowBackground(Color.clear)
                         }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(activeProfile)
-                                .font(.headline)
-                            Image(systemName: "chevron.down")
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundStyle(.primary)
+                        .listSectionSpacing(4)
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingContactPicker = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+                .listStyle(.insetGrouped)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
                 }
             }
-            .sheet(isPresented: $showingSettings) {
-                NavigationStack {
-                    SettingsView()
-                }
+        }
+        .sheet(isPresented: $showingSettings) {
+            NavigationStack {
+                SettingsView()
             }
-            .sheet(isPresented: $showingContactPicker) {
-                ContactPickerView { contactID, name in
-                    if let existing = buds.first(where: {
-                        $0.contactID == contactID && $0.profileName == activeProfile
-                    }) {
-                        if existing.isArchived {
-                            existing.isArchived = false
-                        }
-                        return
+        }
+        .sheet(isPresented: $showingContactPicker) {
+            ContactPickerView { contactID, name in
+                if let existing = buds.first(where: {
+                    $0.contactID == contactID && $0.profileName == activeProfile
+                }) {
+                    if existing.isArchived {
+                        existing.isArchived = false
                     }
-                    let bud = Bud(contactID: contactID, name: name)
-                    bud.profileName = activeProfile
-                    modelContext.insert(bud)
+                    return
                 }
+                let bud = Bud(contactID: contactID, name: name)
+                bud.profileName = activeProfile
+                modelContext.insert(bud)
             }
         }
     }

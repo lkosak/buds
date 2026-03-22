@@ -7,12 +7,12 @@ struct BudsApp: App {
 
     init() {
         let config = ModelConfiguration("Buds", cloudKitDatabase: .automatic)
-        container = try! ModelContainer(for: Bud.self, ContactInteraction.self, configurations: config)
+        container = try! ModelContainer(for: Bud.self, ContactInteraction.self, Event.self, configurations: config)
     }
 
     var body: some Scene {
         WindowGroup {
-            BudListView()
+            MainTabView()
         }
         .modelContainer(container)
     }

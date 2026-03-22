@@ -1,0 +1,205 @@
+{
+  "buds" : [
+    {
+      "addedDate" : "2025-11-15T08:00:00Z",
+      "contactCadenceDays" : 14,
+      "contactID" : "sample-001",
+      "events" : [
+        {
+          "date" : "2026-04-12T00:00:00Z",
+          "note" : "Dinner at the new Italian place"
+        }
+      ],
+      "interactions" : [
+        {
+          "channelRaw" : "In Person",
+          "date" : "2026-03-10T18:30:00Z",
+          "note" : "Coffee catch-up downtown"
+        },
+        {
+          "channelRaw" : "Text",
+          "date" : "2026-03-01T14:00:00Z",
+          "note" : "Sent article about the hiking trail"
+        },
+        {
+          "channelRaw" : "Call",
+          "date" : "2026-02-14T20:00:00Z",
+          "note" : null
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : true,
+      "lastContactDate" : "2026-03-10T18:30:00Z",
+      "name" : "Alex Rivera",
+      "profileName" : "Personal"
+    },
+    {
+      "addedDate" : "2025-12-01T08:00:00Z",
+      "contactCadenceDays" : 7,
+      "contactID" : "sample-002",
+      "events" : [],
+      "interactions" : [
+        {
+          "channelRaw" : "Video",
+          "date" : "2026-03-18T10:00:00Z",
+          "note" : "Weekly 1:1"
+        },
+        {
+          "channelRaw" : "Video",
+          "date" : "2026-03-11T10:00:00Z",
+          "note" : "Weekly 1:1"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : false,
+      "lastContactDate" : "2026-03-18T10:00:00Z",
+      "name" : "Jordan Chen",
+      "profileName" : "Professional"
+    },
+    {
+      "addedDate" : "2025-10-20T08:00:00Z",
+      "contactCadenceDays" : 30,
+      "contactID" : "sample-003",
+      "events" : [
+        {
+          "date" : "2026-05-22T00:00:00Z",
+          "note" : "Wedding"
+        }
+      ],
+      "interactions" : [
+        {
+          "channelRaw" : "Text",
+          "date" : "2026-03-05T09:15:00Z",
+          "note" : "RSVP'd to the wedding"
+        },
+        {
+          "channelRaw" : "In Person",
+          "date" : "2026-02-08T19:00:00Z",
+          "note" : "Game night at their place"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : false,
+      "lastContactDate" : "2026-03-05T09:15:00Z",
+      "name" : "Sam Okafor",
+      "profileName" : "Personal"
+    },
+    {
+      "addedDate" : "2026-01-10T08:00:00Z",
+      "contactCadenceDays" : 21,
+      "contactID" : "sample-004",
+      "events" : [
+        {
+          "date" : "2026-04-01T00:00:00Z",
+          "note" : "Quarterly business review"
+        }
+      ],
+      "interactions" : [
+        {
+          "channelRaw" : "Call",
+          "date" : "2026-03-15T16:00:00Z",
+          "note" : "Discussed partnership proposal"
+        },
+        {
+          "channelRaw" : "Social",
+          "date" : "2026-02-28T12:00:00Z",
+          "note" : "Commented on their LinkedIn post"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : true,
+      "lastContactDate" : "2026-03-15T16:00:00Z",
+      "name" : "Priya Sharma",
+      "profileName" : "Professional"
+    },
+    {
+      "addedDate" : "2025-09-01T08:00:00Z",
+      "contactCadenceDays" : 14,
+      "contactID" : "sample-005",
+      "events" : [],
+      "interactions" : [
+        {
+          "channelRaw" : "In Person",
+          "date" : "2026-02-20T12:00:00Z",
+          "note" : "Lunch near the park"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : false,
+      "lastContactDate" : "2026-02-20T12:00:00Z",
+      "name" : "Taylor Kim",
+      "profileName" : "Personal"
+    },
+    {
+      "addedDate" : "2026-02-01T08:00:00Z",
+      "contactCadenceDays" : 7,
+      "contactID" : "sample-006",
+      "events" : [],
+      "interactions" : [
+        {
+          "channelRaw" : "Text",
+          "date" : "2026-03-19T08:45:00Z",
+          "note" : "Shared the meeting notes"
+        },
+        {
+          "channelRaw" : "Video",
+          "date" : "2026-03-17T14:00:00Z",
+          "note" : "Sprint retro"
+        },
+        {
+          "channelRaw" : "Video",
+          "date" : "2026-03-10T14:00:00Z",
+          "note" : "Sprint planning"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : false,
+      "lastContactDate" : "2026-03-19T08:45:00Z",
+      "name" : "Morgan Wells",
+      "profileName" : "Professional"
+    },
+    {
+      "addedDate" : "2025-08-15T08:00:00Z",
+      "contactCadenceDays" : 60,
+      "contactID" : "sample-007",
+      "events" : [],
+      "interactions" : [
+        {
+          "channelRaw" : "Call",
+          "date" : "2026-01-05T21:00:00Z",
+          "note" : "New Year catch-up call"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : false,
+      "lastContactDate" : "2026-01-05T21:00:00Z",
+      "name" : "Jamie Larsson",
+      "profileName" : "Personal"
+    },
+    {
+      "addedDate" : "2026-01-20T08:00:00Z",
+      "contactCadenceDays" : 30,
+      "contactID" : "sample-008",
+      "events" : [
+        {
+          "date" : "2026-06-15T00:00:00Z",
+          "note" : "Conference talk - save a seat"
+        }
+      ],
+      "interactions" : [
+        {
+          "channelRaw" : "Social",
+          "date" : "2026-03-12T11:00:00Z",
+          "note" : "DM'd about conference panel"
+        }
+      ],
+      "isArchived" : false,
+      "isPinned" : false,
+      "lastContactDate" : "2026-03-12T11:00:00Z",
+      "name" : "Casey Nguyen",
+      "profileName" : "Professional"
+    }
+  ],
+  "exportDate" : "2026-03-21T12:00:00Z",
+  "version" : 1
+}
