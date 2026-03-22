@@ -21,6 +21,7 @@ struct EventDetailView: View {
         Form {
             Section {
                 DatePicker("Date", selection: $date, displayedComponents: .date)
+                    .datePickerStyle(.compact)
             }
 
             Section("Note") {

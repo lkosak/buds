@@ -5,14 +5,23 @@ struct EventsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var events: [Event]
     @Query(filter: #Predicate<Bud> { !$0.isArchived }) private var buds: [Bud]
+    @AppStorage("activeProfile") private var activeProfile = "Personal"
     @State private var birthdayItems: [EventItem] = []
     @State private var showingNewEvent = false
     @State private var newEvent: Event?
     @State private var selectedBud: Bud?
 
     private var allItems: [EventItem] {
-        let appItems = events.map { EventItem.appEvent($0) }
-        let merged = appItems + birthdayItems
+        let appItems = events
+            .filter { $0.bud?.profileName == activeProfile }
+            .map { EventItem.appEvent($0) }
+        let profileBirthdays = birthdayItems.filter {
+            if case .birthday(let bud, _, _) = $0 {
+                return bud.profileName == activeProfile
+            }
+            return false
+        }
+        let merged = appItems + profileBirthdays
         let today = Calendar.current.startOfDay(for: Date())
         return merged
             .filter { $0.date >= today }
@@ -65,20 +74,6 @@ struct EventsView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
-            }
-        }
-        .navigationTitle("Events")
-        .toolbar {
-            ToolbarItem(placement: .bottomBar) {
-                HStack {
-                    Spacer()
-                    Button {
-                        showingNewEvent = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title)
-                    }
-                }
             }
         }
         .sheet(isPresented: $showingNewEvent) {
@@ -206,7 +201,6 @@ struct NewEventView: View {
     @State private var selectedBud: Bud?
     @State private var date = Date()
     @State private var note = ""
-
     var body: some View {
         Form {
             Section("Contact") {
@@ -220,6 +214,7 @@ struct NewEventView: View {
 
             Section {
                 DatePicker("Date", selection: $date, displayedComponents: .date)
+                    .datePickerStyle(.compact)
             }
 
             Section("Note") {

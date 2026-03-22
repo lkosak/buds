@@ -282,7 +282,7 @@ private struct BirthdayEditorView: View {
                                 onSave(nil)
                                 dismiss()
                             } catch {
-                                errorMessage = error.localizedDescription
+                                errorMessage = "Could not update birthday. This contact may not exist in your address book."
                             }
                         }
                     } label: {
@@ -313,7 +313,7 @@ private struct BirthdayEditorView: View {
                             onSave(components)
                             dismiss()
                         } catch {
-                            errorMessage = error.localizedDescription
+                            errorMessage = "Could not save birthday. This contact may not exist in your address book."
                         }
                     }
                 }

@@ -9,8 +9,6 @@ struct BudListView: View {
     @State private var showingSettings = false
     @State private var showingAllBuds = false
 
-    private let profiles = ["Personal", "Professional"]
-
     // Single pass: compute ratio once per bud, partition, then sort each group.
     private var processedBuds: (due: [Bud], notDue: [Bud]) {
         var dueEntries: [(bud: Bud, ratio: Double)] = []
@@ -77,41 +75,6 @@ struct BudListView: View {
                     showingSettings = true
                 } label: {
                     Image(systemName: "gearshape")
-                }
-            }
-            ToolbarItem(placement: .principal) {
-                Menu {
-                    ForEach(profiles, id: \.self) { profile in
-                        Button {
-                            activeProfile = profile
-                        } label: {
-                            if profile == activeProfile {
-                                Label(profile, systemImage: "checkmark")
-                            } else {
-                                Text(profile)
-                            }
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(activeProfile)
-                            .font(.headline)
-                        Image(systemName: "chevron.down")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundStyle(.primary)
-                }
-            }
-            ToolbarItem(placement: .bottomBar) {
-                HStack {
-                    Spacer()
-                    Button {
-                        showingContactPicker = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title)
-                    }
                 }
             }
         }

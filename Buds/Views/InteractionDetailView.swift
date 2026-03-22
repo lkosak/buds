@@ -23,6 +23,7 @@ struct InteractionDetailView: View {
         Form {
             Section {
                 DatePicker("Date", selection: $date, displayedComponents: .date)
+                    .datePickerStyle(.compact)
             }
 
             Section("Channel") {
