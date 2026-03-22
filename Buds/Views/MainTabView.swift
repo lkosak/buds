@@ -10,8 +10,7 @@ struct MainTabView: View {
             }
             Tab("Events", systemImage: "calendar") {
                 NavigationStack {
-                    Text("Events coming soon")
-                        .foregroundStyle(.secondary)
+                    EventsView()
                 }
             }
         }

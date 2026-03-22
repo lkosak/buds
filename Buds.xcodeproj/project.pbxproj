@@ -24,6 +24,9 @@
 		A1000000000000EA /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000EB /* Event.swift */; };
 		A1000000000000FA /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000FB /* MainTabView.swift */; };
 		A100000000000F0A /* BirthdayProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F0B /* BirthdayProvider.swift */; };
+		A100000000000F1A /* EventItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F1B /* EventItem.swift */; };
+		A100000000000F2A /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F2B /* EventsView.swift */; };
+		A100000000000F3A /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F3B /* EventDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +49,9 @@
 		A1000000000000EB /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		A1000000000000FB /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		A100000000000F0B /* BirthdayProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthdayProvider.swift; sourceTree = "<group>"; };
+		A100000000000F1B /* EventItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventItem.swift; sourceTree = "<group>"; };
+		A100000000000F2B /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
+		A100000000000F3B /* EventDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,8 @@
 				A1000000000000BB /* SettingsView.swift */,
 				A1000000000000CB /* InteractionDetailView.swift */,
 				A1000000000000FB /* MainTabView.swift */,
+				A100000000000F2B /* EventsView.swift */,
+				A100000000000F3B /* EventDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -120,6 +128,7 @@
 				A10000000000003B /* ContactPhotoCache.swift */,
 				A1000000000000DB /* BudTransfer.swift */,
 				A100000000000F0B /* BirthdayProvider.swift */,
+				A100000000000F1B /* EventItem.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -209,6 +218,9 @@
 				A1000000000000EA /* Event.swift in Sources */,
 				A1000000000000FA /* MainTabView.swift in Sources */,
 				A100000000000F0A /* BirthdayProvider.swift in Sources */,
+				A100000000000F1A /* EventItem.swift in Sources */,
+				A100000000000F2A /* EventsView.swift in Sources */,
+				A100000000000F3A /* EventDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
