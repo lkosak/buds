@@ -8,11 +8,11 @@ struct BudDetailView: View {
     @State private var showingArchiveConfirmation = false
     @State private var interactionToEdit: ContactInteraction?
     @State private var newInteraction: ContactInteraction?
+    @State private var eventToEdit: Event?
+    @State private var newEvent: Event?
     @State private var birthday: DateComponents?
     @State private var loadingBirthday = true
     @State private var showingBirthdayEditor = false
-    @State private var eventToEdit: Event?
-    @State private var newEvent: Event?
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
@@ -81,27 +81,33 @@ struct BudDetailView: View {
                 .listRowBackground(Color.clear)
             }
 
-            Section("Birthday") {
-                if loadingBirthday {
-                    ProgressView()
-                } else if let birthday, let month = birthday.month, let day = birthday.day {
-                    Button {
-                        showingBirthdayEditor = true
-                    } label: {
-                        HStack {
-                            Label(formattedBirthday(month: month, day: day), systemImage: "gift.fill")
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
+            Section {
+                Button {
+                    logContact()
+                } label: {
+                    Label("Log Contact", systemImage: "message.fill")
+                }
+            }
+
+            Section("History") {
+                if sortedInteractions.isEmpty {
+                    Text("No contact history yet")
+                        .foregroundStyle(.secondary)
                 } else {
-                    Button {
-                        showingBirthdayEditor = true
-                    } label: {
-                        Label("Add Birthday", systemImage: "gift")
+                    ForEach(sortedInteractions) { interaction in
+                        Button {
+                            interactionToEdit = interaction
+                        } label: {
+                            InteractionRowView(interaction: interaction)
+                        }
+                        .tint(.primary)
+                    }
+                    .onDelete { offsets in
+                        for index in offsets {
+                            let interaction = sortedInteractions[index]
+                            modelContext.delete(interaction)
+                        }
+                        updateLastContact()
                     }
                 }
             }
@@ -147,43 +153,34 @@ struct BudDetailView: View {
                 }
             }
 
-            Section {
-                Button {
-                    logNewInteraction()
-                } label: {
-                    Label("Log Contact Now", systemImage: "message.fill")
-                }
-                Button {
-                    logPastInteraction()
-                } label: {
-                    Label("Log Past Contact...", systemImage: "clock.arrow.circlepath")
-                }
+            Section("Notes") {
+                TextField("Add notes...", text: Bindable(bud).notes, axis: .vertical)
+                    .lineLimit(3...)
             }
 
-            Section("History") {
-                if sortedInteractions.isEmpty {
-                    Text("No contact history yet")
-                        .foregroundStyle(.secondary)
+            Section("Details") {
+                if loadingBirthday {
+                    LabeledContent("Birthday") {
+                        ProgressView()
+                    }
+                } else if let birthday, let month = birthday.month, let day = birthday.day {
+                    Button {
+                        showingBirthdayEditor = true
+                    } label: {
+                        LabeledContent("Birthday", value: formattedBirthday(month: month, day: day))
+                            .foregroundStyle(.primary)
+                    }
                 } else {
-                    ForEach(sortedInteractions) { interaction in
-                        Button {
-                            interactionToEdit = interaction
-                        } label: {
-                            InteractionRowView(interaction: interaction)
+                    Button {
+                        showingBirthdayEditor = true
+                    } label: {
+                        LabeledContent("Birthday") {
+                            Text("Add")
+                                .foregroundStyle(.blue)
                         }
-                        .tint(.primary)
-                    }
-                    .onDelete { offsets in
-                        for index in offsets {
-                            let interaction = sortedInteractions[index]
-                            modelContext.delete(interaction)
-                        }
-                        updateLastContact()
+                        .foregroundStyle(.primary)
                     }
                 }
-            }
-
-            Section("Check-in Frequency") {
                 ForEach(cadenceOptions, id: \.self) { days in
                     Button {
                         bud.contactCadenceDays = days
@@ -199,9 +196,6 @@ struct BudDetailView: View {
                         }
                     }
                 }
-            }
-
-            Section("Details") {
                 LabeledContent("Added", value: bud.addedDate.formatted(date: .abbreviated, time: .omitted))
                 LabeledContent("Times contacted", value: "\((bud.interactions ?? []).count)")
             }
@@ -261,13 +255,7 @@ struct BudDetailView: View {
         }
     }
 
-    private func logNewInteraction() {
-        let interaction = ContactInteraction()
-        appendInteraction(interaction)
-        bud.lastContactDate = Calendar.current.startOfDay(for: interaction.date)
-    }
-
-    private func logPastInteraction() {
+    private func logContact() {
         let interaction = ContactInteraction()
         appendInteraction(interaction)
         newInteraction = interaction
