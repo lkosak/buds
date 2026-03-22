@@ -11,6 +11,8 @@ struct BudDetailView: View {
     @State private var birthday: DateComponents?
     @State private var loadingBirthday = true
     @State private var showingBirthdayEditor = false
+    @State private var eventToEdit: Event?
+    @State private var newEvent: Event?
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
@@ -29,6 +31,13 @@ struct BudDetailView: View {
 
     private var sortedInteractions: [ContactInteraction] {
         (bud.interactions ?? []).sorted { $0.date > $1.date }
+    }
+
+    private var upcomingEvents: [Event] {
+        let today = Calendar.current.startOfDay(for: Date())
+        return (bud.events ?? [])
+            .filter { $0.date >= today }
+            .sorted { $0.date < $1.date }
     }
 
     var body: some View {
@@ -94,6 +103,47 @@ struct BudDetailView: View {
                     } label: {
                         Label("Add Birthday", systemImage: "gift")
                     }
+                }
+            }
+
+            Section("Events") {
+                if upcomingEvents.isEmpty {
+                    Text("No upcoming events")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(upcomingEvents) { event in
+                        Button {
+                            eventToEdit = event
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(event.date.formatted(date: .abbreviated, time: .omitted))
+                                        .font(.subheadline)
+                                    if !event.note.isEmpty {
+                                        Text(event.note)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(2)
+                                    }
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                        .tint(.primary)
+                    }
+                    .onDelete { offsets in
+                        for index in offsets {
+                            modelContext.delete(upcomingEvents[index])
+                        }
+                    }
+                }
+                Button {
+                    addNewEvent()
+                } label: {
+                    Label("Add Event", systemImage: "calendar.badge.plus")
                 }
             }
 
@@ -188,6 +238,16 @@ struct BudDetailView: View {
                 InteractionDetailView(interaction: interaction, isNew: true)
             }
         }
+        .sheet(item: $eventToEdit) { event in
+            NavigationStack {
+                EventDetailView(event: event)
+            }
+        }
+        .sheet(item: $newEvent) { event in
+            NavigationStack {
+                EventDetailView(event: event, isNew: true)
+            }
+        }
         .sheet(isPresented: $showingBirthdayEditor) {
             NavigationStack {
                 BirthdayEditorView(contactID: bud.contactID, birthday: birthday) { updated in
@@ -211,6 +271,17 @@ struct BudDetailView: View {
         let interaction = ContactInteraction()
         appendInteraction(interaction)
         newInteraction = interaction
+    }
+
+    private func addNewEvent() {
+        let event = Event()
+        modelContext.insert(event)
+        if bud.events != nil {
+            bud.events!.append(event)
+        } else {
+            bud.events = [event]
+        }
+        newEvent = event
     }
 
     private func appendInteraction(_ interaction: ContactInteraction) {
