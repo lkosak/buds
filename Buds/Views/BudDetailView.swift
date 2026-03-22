@@ -8,6 +8,9 @@ struct BudDetailView: View {
     @State private var showingArchiveConfirmation = false
     @State private var interactionToEdit: ContactInteraction?
     @State private var newInteraction: ContactInteraction?
+    @State private var birthday: DateComponents?
+    @State private var loadingBirthday = true
+    @State private var showingBirthdayEditor = false
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
@@ -67,6 +70,31 @@ struct BudDetailView: View {
                     Spacer()
                 }
                 .listRowBackground(Color.clear)
+            }
+
+            Section("Birthday") {
+                if loadingBirthday {
+                    ProgressView()
+                } else if let birthday, let month = birthday.month, let day = birthday.day {
+                    Button {
+                        showingBirthdayEditor = true
+                    } label: {
+                        HStack {
+                            Label(formattedBirthday(month: month, day: day), systemImage: "gift.fill")
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                } else {
+                    Button {
+                        showingBirthdayEditor = true
+                    } label: {
+                        Label("Add Birthday", systemImage: "gift")
+                    }
+                }
             }
 
             Section {
@@ -160,6 +188,17 @@ struct BudDetailView: View {
                 InteractionDetailView(interaction: interaction, isNew: true)
             }
         }
+        .sheet(isPresented: $showingBirthdayEditor) {
+            NavigationStack {
+                BirthdayEditorView(contactID: bud.contactID, birthday: birthday) { updated in
+                    birthday = updated
+                }
+            }
+        }
+        .task {
+            birthday = await BirthdayProvider.shared.birthday(for: bud.contactID)
+            loadingBirthday = false
+        }
     }
 
     private func logNewInteraction() {
@@ -191,6 +230,98 @@ struct BudDetailView: View {
         let first = parts.first?.prefix(1) ?? ""
         let last = parts.count > 1 ? parts.last!.prefix(1) : ""
         return "\(first)\(last)".uppercased()
+    }
+
+    private func formattedBirthday(month: Int, day: Int) -> String {
+        var components = DateComponents()
+        components.month = month
+        components.day = day
+        components.year = 2000
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d"
+        if let date = Calendar.current.date(from: components) {
+            return formatter.string(from: date)
+        }
+        return "\(month)/\(day)"
+    }
+}
+
+private struct BirthdayEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+    let contactID: String
+    let birthday: DateComponents?
+    let onSave: (DateComponents?) -> Void
+
+    @State private var date: Date
+    @State private var errorMessage: String?
+
+    init(contactID: String, birthday: DateComponents?, onSave: @escaping (DateComponents?) -> Void) {
+        self.contactID = contactID
+        self.birthday = birthday
+        self.onSave = onSave
+        var components = DateComponents()
+        components.month = birthday?.month ?? 1
+        components.day = birthday?.day ?? 1
+        components.year = 2000
+        _date = State(initialValue: Calendar.current.date(from: components) ?? Date())
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                DatePicker("Birthday", selection: $date, displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+            }
+
+            if birthday != nil {
+                Section {
+                    Button(role: .destructive) {
+                        Task {
+                            do {
+                                try await BirthdayProvider.shared.setBirthday(nil, for: contactID)
+                                onSave(nil)
+                                dismiss()
+                            } catch {
+                                errorMessage = error.localizedDescription
+                            }
+                        }
+                    } label: {
+                        Label("Remove Birthday", systemImage: "trash")
+                    }
+                }
+            }
+
+            if let errorMessage {
+                Section {
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                }
+            }
+        }
+        .navigationTitle("Birthday")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    Task {
+                        let cal = Calendar.current
+                        var components = DateComponents()
+                        components.month = cal.component(.month, from: date)
+                        components.day = cal.component(.day, from: date)
+                        do {
+                            try await BirthdayProvider.shared.setBirthday(components, for: contactID)
+                            onSave(components)
+                            dismiss()
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
+                    }
+                }
+            }
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { dismiss() }
+            }
+        }
     }
 }
 
