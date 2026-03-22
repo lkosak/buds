@@ -13,6 +13,8 @@ final class Bud {
     var contactCadenceDays: Int = 90
     @Relationship(deleteRule: .cascade, inverse: \ContactInteraction.bud)
     var interactions: [ContactInteraction]? = []
+    @Relationship(deleteRule: .cascade, inverse: \Event.bud)
+    var events: [Event]? = []
 
     init(contactID: String, name: String) {
         self.contactID = contactID

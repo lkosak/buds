@@ -37,100 +37,102 @@ struct BudListView: View {
 
     var body: some View {
         let (dueBuds, notDueBuds) = processedBuds
-        NavigationStack {
-            Group {
-                if dueBuds.isEmpty && notDueBuds.isEmpty {
-                    EmptyStateView { showingContactPicker = true }
-                } else {
-                    List {
-                        Section {
-                            ForEach(dueBuds) { bud in
+        Group {
+            if dueBuds.isEmpty && notDueBuds.isEmpty {
+                EmptyStateView { showingContactPicker = true }
+            } else {
+                List {
+                    Section {
+                        ForEach(dueBuds) { bud in
+                            budRow(bud)
+                        }
+                        if showingAllBuds {
+                            ForEach(notDueBuds) { bud in
                                 budRow(bud)
                             }
-                            if showingAllBuds {
-                                ForEach(notDueBuds) { bud in
-                                    budRow(bud)
-                                }
-                            }
-                        }
-
-                        if !notDueBuds.isEmpty {
-                            Section {
-                                Button {
-                                    withAnimation { showingAllBuds.toggle() }
-                                } label: {
-                                    Text(showingAllBuds ? "Show fewer" : "\(notDueBuds.count) more not due yet")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                }
-                                .listRowBackground(Color.clear)
-                            }
-                            .listSectionSpacing(4)
                         }
                     }
-                    .listStyle(.insetGrouped)
+
+                    if !notDueBuds.isEmpty {
+                        Section {
+                            Button {
+                                withAnimation { showingAllBuds.toggle() }
+                            } label: {
+                                Text(showingAllBuds ? "Show fewer" : "\(notDueBuds.count) more not due yet")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                            }
+                            .listRowBackground(Color.clear)
+                        }
+                        .listSectionSpacing(4)
+                    }
+                }
+                .listStyle(.insetGrouped)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
-                }
-                ToolbarItem(placement: .principal) {
-                    Menu {
-                        ForEach(profiles, id: \.self) { profile in
-                            Button {
-                                activeProfile = profile
-                            } label: {
-                                if profile == activeProfile {
-                                    Label(profile, systemImage: "checkmark")
-                                } else {
-                                    Text(profile)
-                                }
+            ToolbarItem(placement: .principal) {
+                Menu {
+                    ForEach(profiles, id: \.self) { profile in
+                        Button {
+                            activeProfile = profile
+                        } label: {
+                            if profile == activeProfile {
+                                Label(profile, systemImage: "checkmark")
+                            } else {
+                                Text(profile)
                             }
                         }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(activeProfile)
-                                .font(.headline)
-                            Image(systemName: "chevron.down")
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                        }
-                        .foregroundStyle(.primary)
                     }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(activeProfile)
+                            .font(.headline)
+                        Image(systemName: "chevron.down")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(.primary)
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+            }
+            ToolbarItem(placement: .bottomBar) {
+                HStack {
+                    Spacer()
                     Button {
                         showingContactPicker = true
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title)
                     }
                 }
             }
-            .sheet(isPresented: $showingSettings) {
-                NavigationStack {
-                    SettingsView()
-                }
+        }
+        .sheet(isPresented: $showingSettings) {
+            NavigationStack {
+                SettingsView()
             }
-            .sheet(isPresented: $showingContactPicker) {
-                ContactPickerView { contactID, name in
-                    if let existing = buds.first(where: {
-                        $0.contactID == contactID && $0.profileName == activeProfile
-                    }) {
-                        if existing.isArchived {
-                            existing.isArchived = false
-                        }
-                        return
+        }
+        .sheet(isPresented: $showingContactPicker) {
+            ContactPickerView { contactID, name in
+                if let existing = buds.first(where: {
+                    $0.contactID == contactID && $0.profileName == activeProfile
+                }) {
+                    if existing.isArchived {
+                        existing.isArchived = false
                     }
-                    let bud = Bud(contactID: contactID, name: name)
-                    bud.profileName = activeProfile
-                    modelContext.insert(bud)
+                    return
                 }
+                let bud = Bud(contactID: contactID, name: name)
+                bud.profileName = activeProfile
+                modelContext.insert(bud)
             }
         }
     }
