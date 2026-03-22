@@ -242,8 +242,12 @@ struct NewEventView: View {
     private func save() {
         guard let bud = selectedBud else { return }
         let event = Event(date: Calendar.current.startOfDay(for: date), note: note)
-        event.bud = bud
         modelContext.insert(event)
+        if bud.events != nil {
+            bud.events!.append(event)
+        } else {
+            bud.events = [event]
+        }
         dismiss()
     }
 }
