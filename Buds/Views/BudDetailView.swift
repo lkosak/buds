@@ -22,10 +22,10 @@ struct BudDetailView: View {
 
     private func cadenceLabel(_ days: Int) -> String {
         switch days {
-        case 90: return "Every 3 months"
-        case 180: return "Every 6 months"
-        case 365: return "Every 12 months"
-        default: return "Every \(days) days"
+        case 90: return "3 months"
+        case 180: return "6 months"
+        case 365: return "12 months"
+        default: return "\(days) days"
         }
     }
 
@@ -181,21 +181,12 @@ struct BudDetailView: View {
                         .foregroundStyle(.primary)
                     }
                 }
-                ForEach(cadenceOptions, id: \.self) { days in
-                    Button {
-                        bud.contactCadenceDays = days
-                    } label: {
-                        HStack {
-                            Text(cadenceLabel(days))
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            if bud.contactCadenceDays == days {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.blue)
-                            }
-                        }
+                Picker("Frequency", selection: Bindable(bud).contactCadenceDays) {
+                    ForEach(cadenceOptions, id: \.self) { days in
+                        Text(cadenceLabel(days)).tag(days)
                     }
                 }
+                .pickerStyle(.segmented)
                 LabeledContent("Added", value: bud.addedDate.formatted(date: .abbreviated, time: .omitted))
                 LabeledContent("Times contacted", value: "\((bud.interactions ?? []).count)")
             }
