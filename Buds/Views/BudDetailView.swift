@@ -81,15 +81,7 @@ struct BudDetailView: View {
                 .listRowBackground(Color.clear)
             }
 
-            Section {
-                Button {
-                    logContact()
-                } label: {
-                    Label("Log Contact", systemImage: "message.fill")
-                }
-            }
-
-            Section("History") {
+            Section("Contact History") {
                 if sortedInteractions.isEmpty {
                     Text("No contact history yet")
                         .foregroundStyle(.secondary)
@@ -109,6 +101,11 @@ struct BudDetailView: View {
                         }
                         updateLastContact()
                     }
+                }
+                Button {
+                    logContact()
+                } label: {
+                    Label("Log Contact", systemImage: "message.fill")
                 }
             }
 
@@ -158,6 +155,15 @@ struct BudDetailView: View {
                     .lineLimit(3...)
             }
 
+            Section("Target Frequency") {
+                Picker("Frequency", selection: Bindable(bud).contactCadenceDays) {
+                    ForEach(cadenceOptions, id: \.self) { days in
+                        Text(cadenceLabel(days)).tag(days)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
             Section("Details") {
                 if loadingBirthday {
                     LabeledContent("Birthday") {
@@ -181,12 +187,6 @@ struct BudDetailView: View {
                         .foregroundStyle(.primary)
                     }
                 }
-                Picker("Frequency", selection: Bindable(bud).contactCadenceDays) {
-                    ForEach(cadenceOptions, id: \.self) { days in
-                        Text(cadenceLabel(days)).tag(days)
-                    }
-                }
-                .pickerStyle(.segmented)
                 LabeledContent("Added", value: bud.addedDate.formatted(date: .abbreviated, time: .omitted))
                 LabeledContent("Times contacted", value: "\((bud.interactions ?? []).count)")
             }
