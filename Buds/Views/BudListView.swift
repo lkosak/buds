@@ -116,6 +116,7 @@ struct BudListView: View {
                     bud.interactions = [interaction]
                 }
                 bud.lastContactDate = interaction.date
+                Task { await rescheduleAllNotifications(context: modelContext) }
             } onTogglePin: {
                 bud.isPinned.toggle()
             }
