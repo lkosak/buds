@@ -248,6 +248,7 @@ struct NewEventView: View {
         } else {
             bud.events = [event]
         }
+        Task { await rescheduleAllNotifications(context: modelContext) }
         dismiss()
     }
 }

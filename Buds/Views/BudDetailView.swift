@@ -244,6 +244,9 @@ struct BudDetailView: View {
             birthday = await BirthdayProvider.shared.birthday(for: bud.contactID)
             loadingBirthday = false
         }
+        .onDisappear {
+            Task { await rescheduleAllNotifications(context: modelContext) }
+        }
     }
 
     private func logContact() {
