@@ -16,18 +16,18 @@ struct BudsApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
-        }
-        .modelContainer(container)
-        .task {
-            await NotificationScheduler.shared.requestPermission()
-            await rescheduleAllNotifications(context: container.mainContext)
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                Task {
+                .task {
+                    await NotificationScheduler.shared.requestPermission()
                     await rescheduleAllNotifications(context: container.mainContext)
                 }
-            }
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .active {
+                        Task {
+                            await rescheduleAllNotifications(context: container.mainContext)
+                        }
+                    }
+                }
         }
+        .modelContainer(container)
     }
 }
