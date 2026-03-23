@@ -1,0 +1,100 @@
+import SwiftData
+import SwiftUI
+
+struct SearchView: View {
+    @Query(filter: #Predicate<Bud> { !$0.isArchived }) private var buds: [Bud]
+    @Query private var events: [Event]
+    @AppStorage("activeProfile") private var activeProfile = "Personal"
+    @State private var searchText = ""
+    @State private var searchIsActive = false
+
+    private var filteredBuds: [Bud] {
+        guard !searchText.isEmpty else { return [] }
+        let query = searchText.lowercased()
+        return buds
+            .filter { $0.profileName == activeProfile && $0.name.lowercased().contains(query) }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    private var filteredEvents: [Event] {
+        guard !searchText.isEmpty else { return [] }
+        let query = searchText.lowercased()
+        return events
+            .filter { event in
+                guard event.bud?.profileName == activeProfile else { return false }
+                return (event.bud?.name.lowercased().contains(query) ?? false)
+                    || event.note.lowercased().contains(query)
+            }
+            .sorted { $0.date < $1.date }
+    }
+
+    var body: some View {
+        List {
+            if !filteredBuds.isEmpty {
+                Section("Buds") {
+                    ForEach(filteredBuds) { bud in
+                        NavigationLink {
+                            BudDetailView(
+                                bud: bud,
+                                photo: ContactPhotoCache.shared.cachedPhoto(for: bud.contactID)
+                            )
+                        } label: {
+                            BudRowView(bud: bud) {
+                                let interaction = ContactInteraction()
+                                if bud.interactions != nil {
+                                    bud.interactions!.append(interaction)
+                                } else {
+                                    bud.interactions = [interaction]
+                                }
+                                bud.lastContactDate = interaction.date
+                            } onTogglePin: {
+                                bud.isPinned.toggle()
+                            }
+                        }
+                    }
+                }
+            }
+
+            if !filteredEvents.isEmpty {
+                Section("Events") {
+                    ForEach(filteredEvents) { event in
+                        NavigationLink {
+                            EventDetailView(event: event)
+                        } label: {
+                            HStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(event.bud?.name ?? "Unknown")
+                                        .font(.body)
+                                    if !event.note.isEmpty {
+                                        Text(event.note)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                }
+                                Spacer()
+                                Text(event.date.formatted(.dateTime.month(.abbreviated).day()))
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if searchText.isEmpty {
+                ContentUnavailableView("Search Buds & Events", systemImage: "magnifyingglass", description: Text("Search by name or event note."))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            } else if filteredBuds.isEmpty && filteredEvents.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
+        }
+        .listStyle(.insetGrouped)
+        .searchable(text: $searchText, isPresented: $searchIsActive, prompt: "Name or event note")
+        .navigationTitle("Search")
+        .onAppear { searchIsActive = true }
+    }
+}

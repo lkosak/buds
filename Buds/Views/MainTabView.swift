@@ -50,6 +50,16 @@ struct MainTabView: View {
                         }
                 }
             }
+            Tab(role: .search) {
+                NavigationStack {
+                    SearchView()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                profileButton
+                            }
+                        }
+                }
+            }
         }
         .sheet(isPresented: $showingContactPicker) {
             ContactPickerView { contactID, name in

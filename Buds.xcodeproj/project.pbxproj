@@ -28,6 +28,7 @@
 		A100000000000F2A /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F2B /* EventsView.swift */; };
 		A100000000000F3A /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F3B /* EventDetailView.swift */; };
 		A100000000000F4A /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F4B /* NotificationScheduler.swift */; };
+		A100000000000F5A /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000F5B /* SearchView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		A100000000000F2B /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
 		A100000000000F3B /* EventDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailView.swift; sourceTree = "<group>"; };
 		A100000000000F4B /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		A100000000000F5B /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 				A1000000000000FB /* MainTabView.swift */,
 				A100000000000F2B /* EventsView.swift */,
 				A100000000000F3B /* EventDetailView.swift */,
+				A100000000000F5B /* SearchView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				A100000000000F2A /* EventsView.swift in Sources */,
 				A100000000000F3A /* EventDetailView.swift in Sources */,
 				A100000000000F4A /* NotificationScheduler.swift in Sources */,
+				A100000000000F5A /* SearchView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
