@@ -7,6 +7,7 @@ struct SearchView: View {
     @AppStorage("activeProfile") private var activeProfile = "Personal"
     @State private var searchText = ""
     @State private var searchIsActive = false
+    @FocusState private var searchIsFocused: Bool
 
     private var filteredBuds: [Bud] {
         guard !searchText.isEmpty else { return [] }
@@ -94,7 +95,12 @@ struct SearchView: View {
         }
         .listStyle(.insetGrouped)
         .searchable(text: $searchText, isPresented: $searchIsActive, prompt: "Name or event note")
-        .navigationTitle("Search")
-        .onAppear { searchIsActive = true }
+        .searchFocused($searchIsFocused)
+        .navigationTitle("")
+        .task {
+            searchIsActive = true
+            try? await Task.sleep(for: .milliseconds(100))
+            searchIsFocused = true
+        }
     }
 }
