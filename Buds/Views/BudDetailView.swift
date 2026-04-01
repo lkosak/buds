@@ -10,6 +10,7 @@ struct BudDetailView: View {
     @State private var newInteraction: ContactInteraction?
     @State private var eventToEdit: Event?
     @State private var newEvent: Event?
+    @State private var showingNewEvent = false
     @State private var birthday: DateComponents?
     @State private var loadingBirthday = true
     @State private var showingBirthdayEditor = false
@@ -228,9 +229,11 @@ struct BudDetailView: View {
                 EventDetailView(event: event)
             }
         }
-        .sheet(item: $newEvent) { event in
-            NavigationStack {
-                EventDetailView(event: event, isNew: true)
+        .sheet(isPresented: $showingNewEvent, onDismiss: { newEvent = nil }) {
+            if let event = newEvent {
+                NavigationStack {
+                    EventDetailView(event: event, isNew: true)
+                }
             }
         }
         .sheet(isPresented: $showingBirthdayEditor) {
@@ -264,6 +267,7 @@ struct BudDetailView: View {
             bud.events = [event]
         }
         newEvent = event
+        showingNewEvent = true
     }
 
     private func appendInteraction(_ interaction: ContactInteraction) {
