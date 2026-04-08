@@ -11,6 +11,20 @@ struct EventsView: View {
     @State private var newEvent: Event?
     @State private var selectedBud: Bud?
 
+    private var today: Date {
+        Calendar.current.startOfDay(for: Date())
+    }
+
+    // Past app events (last 30 days, birthdays don't have past occurrences)
+    private var pastItems: [EventItem] {
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: today)!
+        return events
+            .filter { $0.bud?.profileName == activeProfile }
+            .filter { $0.date >= thirtyDaysAgo && $0.date < today }
+            .map { EventItem.appEvent($0) }
+            .sorted { $0.date < $1.date }
+    }
+
     private var allItems: [EventItem] {
         let appItems = events
             .filter { $0.bud?.profileName == activeProfile }
@@ -22,19 +36,18 @@ struct EventsView: View {
             return false
         }
         let merged = appItems + profileBirthdays
-        let today = Calendar.current.startOfDay(for: Date())
         return merged
             .filter { $0.date >= today }
             .sorted { $0.date < $1.date }
     }
 
-    private var groupedItems: [(String, [EventItem])] {
+    private func grouped(_ items: [EventItem]) -> [(String, [EventItem])] {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
         var groups: [(String, [EventItem])] = []
         var currentKey = ""
         var currentItems: [EventItem] = []
-        for item in allItems {
+        for item in items {
             let key = formatter.string(from: item.date)
             if key != currentKey {
                 if !currentItems.isEmpty {
@@ -52,9 +65,12 @@ struct EventsView: View {
         return groups
     }
 
+    private var groupedPastItems: [(String, [EventItem])] { grouped(pastItems) }
+    private var groupedItems: [(String, [EventItem])] { grouped(allItems) }
+
     var body: some View {
         Group {
-            if allItems.isEmpty {
+            if allItems.isEmpty && pastItems.isEmpty {
                 ContentUnavailableView {
                     Label("No Upcoming Events", systemImage: "calendar")
                 } description: {
@@ -64,16 +80,43 @@ struct EventsView: View {
                         .buttonStyle(.borderedProminent)
                 }
             } else {
-                List {
-                    ForEach(groupedItems, id: \.0) { month, items in
-                        Section(month) {
-                            ForEach(items) { item in
-                                eventRow(item)
+                ScrollViewReader { proxy in
+                    List {
+                        // Past events (last 30 days), faded
+                        ForEach(groupedPastItems, id: \.0) { month, items in
+                            Section {
+                                ForEach(items) { item in
+                                    eventRow(item)
+                                        .opacity(0.4)
+                                }
+                            } header: {
+                                Text(month)
+                                    .opacity(0.5)
+                            }
+                        }
+
+                        // Invisible anchor row marking "today"
+                        Color.clear
+                            .frame(height: 0)
+                            .id("today-anchor")
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets())
+
+                        // Upcoming events
+                        ForEach(groupedItems, id: \.0) { month, items in
+                            Section(month) {
+                                ForEach(items) { item in
+                                    eventRow(item)
+                                }
                             }
                         }
                     }
+                    .listStyle(.insetGrouped)
+                    .onAppear {
+                        proxy.scrollTo("today-anchor", anchor: .top)
+                    }
                 }
-                .listStyle(.insetGrouped)
             }
         }
         .sheet(isPresented: $showingNewEvent) {
