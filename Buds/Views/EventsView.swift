@@ -11,14 +11,16 @@ private struct ScrollToTopDisabler: UIViewRepresentable {
         override func didMoveToWindow() {
             super.didMoveToWindow()
             DispatchQueue.main.async { [weak self] in
-                var v: UIView? = self
-                while let node = v {
-                    if let sv = node as? UIScrollView {
-                        sv.scrollsToTop = false
-                        return
+                // Go up a couple levels to the List's container, then search down for the UITableView
+                guard let ancestor = self?.superview?.superview else { return }
+                func find(_ view: UIView) -> UIScrollView? {
+                    if let sv = view as? UIScrollView { return sv }
+                    for sub in view.subviews {
+                        if let found = find(sub) { return found }
                     }
-                    v = node.superview
+                    return nil
                 }
+                find(ancestor)?.scrollsToTop = false
             }
         }
     }
@@ -106,12 +108,6 @@ struct EventsView: View {
             } else {
                 ScrollViewReader { proxy in
                     List {
-                        ScrollToTopDisabler()
-                            .frame(height: 0)
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
-
                         // Past events (last 30 days), faded
                         ForEach(groupedPastItems, id: \.0) { month, items in
                             Section {
@@ -136,6 +132,7 @@ struct EventsView: View {
                         }
                     }
                     .listStyle(.insetGrouped)
+                    .background(ScrollToTopDisabler())
                     .onAppear {
                         guard !pastItems.isEmpty else { return }
                         DispatchQueue.main.async {
