@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct SearchView: View {
+    var focusTrigger: Int = 0
     @Query(filter: #Predicate<Bud> { !$0.isArchived }) private var buds: [Bud]
     @Query private var events: [Event]
     @AppStorage("activeProfile") private var activeProfile = "Personal"
@@ -97,9 +98,8 @@ struct SearchView: View {
         .searchable(text: $searchText, isPresented: $searchIsActive, prompt: "Name or event note")
         .searchFocused($searchIsFocused)
         .navigationTitle("")
-        .task {
+        .onChange(of: focusTrigger) {
             searchIsActive = true
-            try? await Task.sleep(for: .milliseconds(100))
             searchIsFocused = true
         }
     }

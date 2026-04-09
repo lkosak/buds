@@ -9,6 +9,7 @@ struct MainTabView: View {
     @State private var showingNewEvent = false
     @State private var selectedTab = "buds"
     @State private var eventsScrollSignal = 0
+    @State private var searchFocusTrigger = 0
 
     private let profiles = ["Personal", "Professional"]
 
@@ -21,6 +22,7 @@ struct MainTabView: View {
             get: { selectedTab },
             set: { newValue in
                 if newValue == "events" { eventsScrollSignal += 1 }
+                if newValue == "search" { searchFocusTrigger += 1 }
                 selectedTab = newValue
             }
         )
@@ -64,7 +66,7 @@ struct MainTabView: View {
             }
             Tab(value: "search", role: .search) {
                 NavigationStack {
-                    SearchView()
+                    SearchView(focusTrigger: searchFocusTrigger)
                         .toolbar {
                             ToolbarItem(placement: .topBarTrailing) {
                                 profileButton
