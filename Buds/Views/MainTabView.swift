@@ -7,6 +7,8 @@ struct MainTabView: View {
     @AppStorage("activeProfile") private var activeProfile = "Personal"
     @State private var showingContactPicker = false
     @State private var showingNewEvent = false
+    @State private var selectedTab = "buds"
+    @State private var eventsScrollSignal = 0
 
     private let profiles = ["Personal", "Professional"]
 
@@ -14,9 +16,19 @@ struct MainTabView: View {
         activeProfile == "Personal" ? "person.fill" : "building.2.fill"
     }
 
+    private var tabSelection: Binding<String> {
+        Binding(
+            get: { selectedTab },
+            set: { newValue in
+                if newValue == "events" { eventsScrollSignal += 1 }
+                selectedTab = newValue
+            }
+        )
+    }
+
     var body: some View {
-        TabView {
-            Tab("Buds", systemImage: "person.2.fill") {
+        TabView(selection: tabSelection) {
+            Tab("Buds", systemImage: "person.2.fill", value: "buds") {
                 NavigationStack {
                     BudListView()
                         .toolbar {
@@ -33,9 +45,9 @@ struct MainTabView: View {
                         }
                 }
             }
-            Tab("Events", systemImage: "calendar") {
+            Tab("Events", systemImage: "calendar", value: "events") {
                 NavigationStack {
-                    EventsView()
+                    EventsView(scrollSignal: eventsScrollSignal)
                         .toolbar {
                             ToolbarItem(placement: .topBarTrailing) {
                                 profileButton
@@ -50,7 +62,7 @@ struct MainTabView: View {
                         }
                 }
             }
-            Tab(role: .search) {
+            Tab(value: "search", role: .search) {
                 NavigationStack {
                     SearchView()
                         .toolbar {
