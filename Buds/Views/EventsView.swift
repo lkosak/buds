@@ -1,7 +1,31 @@
 import SwiftData
 import SwiftUI
+import UIKit
+
+// Prevents UITabBar's native "scroll to top on re-tap" from fighting our scroll-to-today
+private struct ScrollToTopDisabler: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView { Impl() }
+    func updateUIView(_ uiView: UIView, context: Context) {}
+
+    final class Impl: UIView {
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            DispatchQueue.main.async { [weak self] in
+                var v: UIView? = self
+                while let node = v {
+                    if let sv = node as? UIScrollView {
+                        sv.scrollsToTop = false
+                        return
+                    }
+                    v = node.superview
+                }
+            }
+        }
+    }
+}
 
 struct EventsView: View {
+    var scrollSignal: Int = 0
     @Environment(\.modelContext) private var modelContext
     @Query private var events: [Event]
     @Query(filter: #Predicate<Bud> { !$0.isArchived }) private var buds: [Bud]
@@ -82,6 +106,12 @@ struct EventsView: View {
             } else {
                 ScrollViewReader { proxy in
                     List {
+                        ScrollToTopDisabler()
+                            .frame(height: 0)
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+
                         // Past events (last 30 days), faded
                         ForEach(groupedPastItems, id: \.0) { month, items in
                             Section {
@@ -95,26 +125,27 @@ struct EventsView: View {
                             }
                         }
 
-                        // Invisible anchor row marking "today"
-                        Color.clear
-                            .frame(height: 0)
-                            .id("today-anchor")
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets())
-
                         // Upcoming events
                         ForEach(groupedItems, id: \.0) { month, items in
                             Section(month) {
                                 ForEach(items) { item in
                                     eventRow(item)
+                                        .id(item.id == allItems.first?.id ? "today-anchor" : item.id)
                                 }
                             }
                         }
                     }
                     .listStyle(.insetGrouped)
                     .onAppear {
-                        proxy.scrollTo("today-anchor", anchor: .top)
+                        guard !pastItems.isEmpty else { return }
+                        DispatchQueue.main.async {
+                            proxy.scrollTo("today-anchor", anchor: .top)
+                        }
+                    }
+                    .onChange(of: scrollSignal) {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            proxy.scrollTo("today-anchor", anchor: .top)
+                        }
                     }
                 }
             }
