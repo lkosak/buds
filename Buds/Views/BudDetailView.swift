@@ -19,10 +19,11 @@ struct BudDetailView: View {
         .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
     }
 
-    private let cadenceOptions = [90, 180, 365]
+    private let cadenceOptions = [30, 90, 180, 365]
 
     private func cadenceLabel(_ days: Int) -> String {
         switch days {
+        case 30: return "1 month"
         case 90: return "3 months"
         case 180: return "6 months"
         case 365: return "12 months"
@@ -162,7 +163,6 @@ struct BudDetailView: View {
                         Text(cadenceLabel(days)).tag(days)
                     }
                 }
-                .pickerStyle(.segmented)
             }
 
             Section("Details") {
