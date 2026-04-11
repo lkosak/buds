@@ -98,9 +98,19 @@ struct SearchView: View {
         .searchable(text: $searchText, isPresented: $searchIsActive, prompt: "Name or event note")
         .searchFocused($searchIsFocused)
         .navigationTitle("")
-        .onChange(of: focusTrigger) {
+        .task(id: focusTrigger) {
+            guard focusTrigger > 0 else { return }
             searchIsActive = true
+            try? await Task.sleep(for: .milliseconds(50))
+            // Speed up the keyboard slide-in animation
+            let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene }).first?
+                .windows.first
+            window?.layer.speed = 3.0
             searchIsFocused = true
+            // Reset after keyboard animation completes (~250ms / 3x = ~85ms)
+            try? await Task.sleep(for: .milliseconds(150))
+            window?.layer.speed = 1.0
         }
     }
 }

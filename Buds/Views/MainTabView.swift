@@ -22,7 +22,15 @@ struct MainTabView: View {
             get: { selectedTab },
             set: { newValue in
                 if newValue == "events" { eventsScrollSignal += 1 }
-                if newValue == "search" { searchFocusTrigger += 1 }
+                if newValue == "search" {
+                    searchFocusTrigger += 1
+                    var t = Transaction()
+                    t.disablesAnimations = true
+                    withTransaction(t) {
+                        selectedTab = newValue
+                    }
+                    return
+                }
                 selectedTab = newValue
             }
         )
