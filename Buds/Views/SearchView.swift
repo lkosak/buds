@@ -3,6 +3,7 @@ import SwiftUI
 
 struct SearchView: View {
     var focusTrigger: Int = 0
+    var onDismiss: (() -> Void)?
     @Query(filter: #Predicate<Bud> { !$0.isArchived }) private var buds: [Bud]
     @Query private var events: [Event]
     @AppStorage("activeProfile") private var activeProfile = "Personal"
@@ -98,6 +99,9 @@ struct SearchView: View {
         .searchable(text: $searchText, isPresented: $searchIsActive, prompt: "Name or event note")
         .searchFocused($searchIsFocused)
         .navigationTitle("")
+        .onChange(of: searchIsActive) { _, active in
+            if !active { onDismiss?() }
+        }
         .task(id: focusTrigger) {
             guard focusTrigger > 0 else { return }
             searchIsActive = true

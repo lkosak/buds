@@ -8,6 +8,7 @@ struct MainTabView: View {
     @State private var showingContactPicker = false
     @State private var showingNewEvent = false
     @State private var selectedTab = "buds"
+    @State private var previousTab = "buds"
     @State private var eventsScrollSignal = 0
     @State private var searchFocusTrigger = 0
 
@@ -23,6 +24,7 @@ struct MainTabView: View {
             set: { newValue in
                 if newValue == "events" { eventsScrollSignal += 1 }
                 if newValue == "search" {
+                    previousTab = selectedTab
                     searchFocusTrigger += 1
                     var t = Transaction()
                     t.disablesAnimations = true
@@ -31,6 +33,7 @@ struct MainTabView: View {
                     }
                     return
                 }
+                previousTab = selectedTab
                 selectedTab = newValue
             }
         )
@@ -74,7 +77,9 @@ struct MainTabView: View {
             }
             Tab(value: "search", role: .search) {
                 NavigationStack {
-                    SearchView(focusTrigger: searchFocusTrigger)
+                    SearchView(focusTrigger: searchFocusTrigger) {
+                            selectedTab = previousTab
+                        }
                         .toolbar {
                             ToolbarItem(placement: .topBarTrailing) {
                                 profileButton
