@@ -15,13 +15,19 @@ platform :ios do
       xcodeproj: "Buds.xcodeproj",
     )
 
-    # Use manual signing with the certificate and profile installed by CI
+    # Sync certificates and provisioning profiles from the shared certificates repo
+    match(
+      type: "appstore",
+      api_key: api_key,
+      readonly: true,
+    )
+
     update_code_signing_settings(
       use_automatic_signing: false,
       team_id: ENV["DEVELOPMENT_TEAM"],
       path: "Buds.xcodeproj",
       code_sign_identity: "Apple Distribution",
-      profile_name: ENV["PROVISIONING_PROFILE_NAME"],
+      profile_name: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]["io.lou.app"],
     )
 
     gym(
