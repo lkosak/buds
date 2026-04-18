@@ -1,0 +1,5 @@
+git_url("https://github.com/lkosak/certificates")
+storage_mode("git")
+type("appstore")
+app_identifier(["io.lou.app"])
+git_basic_authorization(ENV["MATCH_GIT_BASIC_AUTHORIZATION"])
