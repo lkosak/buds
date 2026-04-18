@@ -8,17 +8,6 @@ build/
 *.dSYM.zip
 *.dSYM
 
-# Fastlane
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output
-fastlane/*.ipa
-
-# Ruby
-.bundle/
-vendor/
-
 # Claude Code
 .claude/
 
