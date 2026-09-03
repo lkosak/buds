@@ -218,21 +218,21 @@ struct BudDetailView: View {
             NavigationStack {
                 InteractionDetailView(interaction: interaction)
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
         .sheet(item: $newInteraction) { interaction in
             NavigationStack {
                 InteractionDetailView(interaction: interaction, isNew: true)
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
         .sheet(item: $eventToEdit) { event in
             NavigationStack {
                 EventDetailView(event: event)
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingNewEvent, onDismiss: { newEvent = nil }) {
@@ -240,7 +240,7 @@ struct BudDetailView: View {
                 NavigationStack {
                     EventDetailView(event: event, isNew: true)
                 }
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
             }
         }
