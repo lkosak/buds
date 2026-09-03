@@ -62,11 +62,6 @@ struct InteractionDetailView: View {
         .navigationTitle(isNew ? "Log Contact" : "Edit Contact")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    save()
-                }
-            }
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
                     if isNew {
@@ -75,6 +70,19 @@ struct InteractionDetailView: View {
                     dismiss()
                 }
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            Button {
+                save()
+            } label: {
+                Text("Save")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
         }
         .confirmationDialog("Delete this interaction?", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {

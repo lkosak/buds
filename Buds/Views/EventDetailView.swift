@@ -48,11 +48,6 @@ struct EventDetailView: View {
         .navigationTitle(isNew ? "New Event" : "Edit Event")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    save()
-                }
-            }
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
                     if isNew {
@@ -61,6 +56,19 @@ struct EventDetailView: View {
                     dismiss()
                 }
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            Button {
+                save()
+            } label: {
+                Text("Save")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
         }
         .confirmationDialog("Delete this event?", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {

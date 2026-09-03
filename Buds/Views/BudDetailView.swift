@@ -218,22 +218,30 @@ struct BudDetailView: View {
             NavigationStack {
                 InteractionDetailView(interaction: interaction)
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $newInteraction) { interaction in
             NavigationStack {
                 InteractionDetailView(interaction: interaction, isNew: true)
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(item: $eventToEdit) { event in
             NavigationStack {
                 EventDetailView(event: event)
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingNewEvent, onDismiss: { newEvent = nil }) {
             if let event = newEvent {
                 NavigationStack {
                     EventDetailView(event: event, isNew: true)
                 }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             }
         }
         .sheet(isPresented: $showingBirthdayEditor) {
