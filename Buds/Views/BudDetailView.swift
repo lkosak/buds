@@ -8,6 +8,7 @@ struct BudDetailView: View {
     @State private var showingArchiveConfirmation = false
     @State private var interactionToEdit: ContactInteraction?
     @State private var newInteraction: ContactInteraction?
+    @State private var showingQuickLog = false
     @State private var eventToEdit: Event?
     @State private var newEvent: Event?
     @State private var showingNewEvent = false
@@ -105,9 +106,22 @@ struct BudDetailView: View {
                     }
                 }
                 Button {
-                    logContact()
+                    showingQuickLog = true
                 } label: {
                     Label("Log Contact", systemImage: "message.fill")
+                }
+                .popover(isPresented: $showingQuickLog, arrowEdge: .bottom) {
+                    QuickLogPopoverView(
+                        onLog: { channel in
+                            logContact(channel: channel)
+                            showingQuickLog = false
+                        },
+                        onExpand: {
+                            showingQuickLog = false
+                            logContact()
+                        }
+                    )
+                    .presentationCompactAdaptation(.popover)
                 }
             }
 
@@ -264,6 +278,12 @@ struct BudDetailView: View {
         let interaction = ContactInteraction()
         appendInteraction(interaction)
         newInteraction = interaction
+    }
+
+    private func logContact(channel: ContactChannel) {
+        let interaction = ContactInteraction(channel: channel)
+        appendInteraction(interaction)
+        updateLastContact()
     }
 
     private func addNewEvent() {

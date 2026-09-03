@@ -20,6 +20,7 @@
 		A1000000000000AA /* BudDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000AB /* BudDetailView.swift */; };
 		A1000000000000BA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000BB /* SettingsView.swift */; };
 		A1000000000000CA /* InteractionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000CB /* InteractionDetailView.swift */; };
+		A1000000000QL00A /* QuickLogPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000QL00B /* QuickLogPopoverView.swift */; };
 		A1000000000000DA /* BudTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000DB /* BudTransfer.swift */; };
 		A1000000000000EA /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000EB /* Event.swift */; };
 		A1000000000000FA /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000FB /* MainTabView.swift */; };
@@ -47,6 +48,7 @@
 		A1000000000000AB /* BudDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudDetailView.swift; sourceTree = "<group>"; };
 		A1000000000000BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1000000000000CB /* InteractionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionDetailView.swift; sourceTree = "<group>"; };
+		A1000000000QL00B /* QuickLogPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLogPopoverView.swift; sourceTree = "<group>"; };
 		A1000000000000DB /* BudTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudTransfer.swift; sourceTree = "<group>"; };
 		A1000000000000EB /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		A1000000000000FB /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				A10000000000007B /* ContactPickerView.swift */,
 				A1000000000000BB /* SettingsView.swift */,
 				A1000000000000CB /* InteractionDetailView.swift */,
+				A1000000000QL00B /* QuickLogPopoverView.swift */,
 				A1000000000000FB /* MainTabView.swift */,
 				A100000000000F2B /* EventsView.swift */,
 				A100000000000F3B /* EventDetailView.swift */,
@@ -220,6 +223,7 @@
 				A1000000000000AA /* BudDetailView.swift in Sources */,
 				A1000000000000BA /* SettingsView.swift in Sources */,
 				A1000000000000CA /* InteractionDetailView.swift in Sources */,
+				A1000000000QL00A /* QuickLogPopoverView.swift in Sources */,
 				A1000000000000DA /* BudTransfer.swift in Sources */,
 				A1000000000000EA /* Event.swift in Sources */,
 				A1000000000000FA /* MainTabView.swift in Sources */,
