@@ -6,7 +6,6 @@ struct SearchView: View {
     var onDismiss: (() -> Void)?
     @Query(filter: #Predicate<Bud> { !$0.isArchived }) private var buds: [Bud]
     @Query private var events: [Event]
-    @AppStorage("activeProfile") private var activeProfile = "Personal"
     @State private var searchText = ""
     @State private var searchIsActive = false
     @FocusState private var searchIsFocused: Bool
@@ -15,7 +14,7 @@ struct SearchView: View {
         guard !searchText.isEmpty else { return [] }
         let query = searchText.lowercased()
         return buds
-            .filter { $0.profileName == activeProfile && $0.name.lowercased().contains(query) }
+            .filter { $0.name.lowercased().contains(query) }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
@@ -24,8 +23,7 @@ struct SearchView: View {
         let query = searchText.lowercased()
         return events
             .filter { event in
-                guard event.bud?.profileName == activeProfile else { return false }
-                return (event.bud?.name.lowercased().contains(query) ?? false)
+                (event.bud?.name.lowercased().contains(query) ?? false)
                     || event.note.lowercased().contains(query)
             }
             .sorted { $0.date < $1.date }
