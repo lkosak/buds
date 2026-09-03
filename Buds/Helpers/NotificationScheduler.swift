@@ -109,21 +109,20 @@ actor NotificationScheduler {
     private func makeBirthdayRequest(
         _ birthday: (name: String, contactID: String, nextDate: Date)
     ) -> (date: Date, request: UNNotificationRequest)? {
-        guard let dayBefore = Calendar.current.date(byAdding: .day, value: -1, to: birthday.nextDate),
-              dayBefore > Date() else { return nil }
+        guard birthday.nextDate > Date() else { return nil }
 
         let content = UNMutableNotificationContent()
-        content.title = "\(birthday.name)'s birthday is tomorrow"
+        content.title = "It's \(birthday.name)'s birthday today!"
         content.sound = .default
         content.threadIdentifier = "buds-events"
 
-        let trigger = triggerForMorning(of: dayBefore)
+        let trigger = triggerForMorning(of: birthday.nextDate)
         let request = UNNotificationRequest(
             identifier: "birthday-\(birthday.contactID)",
             content: content,
             trigger: trigger
         )
-        return (dayBefore, request)
+        return (birthday.nextDate, request)
     }
 
     // MARK: - Helpers
