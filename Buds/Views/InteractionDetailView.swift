@@ -51,7 +51,7 @@ struct InteractionDetailView: View {
 
             Section("Note") {
                 TextField("Add a note...", text: $note, axis: .vertical)
-                    .lineLimit(3...6)
+                    .lineLimit(1...6)
             }
 
             if !isNew {
