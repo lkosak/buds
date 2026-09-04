@@ -218,7 +218,7 @@ struct BudDetailView: View {
             NavigationStack {
                 InteractionDetailView(interaction: interaction)
             }
-            .presentationDetents([.large])
+            .presentationDetents([.fraction(0.72), .large])
             .presentationDragIndicator(.visible)
         }
         .sheet(item: $newInteraction) { interaction in
@@ -227,7 +227,7 @@ struct BudDetailView: View {
                     appendInteraction(interaction)
                 }
             }
-            .presentationDetents([.large])
+            .presentationDetents([.fraction(0.72), .large])
             .presentationDragIndicator(.visible)
         }
         .sheet(item: $eventToEdit) { event in
