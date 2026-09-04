@@ -40,12 +40,12 @@
       "events" : [],
       "interactions" : [
         {
-          "channelRaw" : "Video",
+          "channelRaw" : "Call",
           "date" : "2026-03-18T10:00:00Z",
           "note" : "Weekly 1:1"
         },
         {
-          "channelRaw" : "Video",
+          "channelRaw" : "Call",
           "date" : "2026-03-11T10:00:00Z",
           "note" : "Weekly 1:1"
         }
@@ -142,12 +142,12 @@
           "note" : "Shared the meeting notes"
         },
         {
-          "channelRaw" : "Video",
+          "channelRaw" : "Call",
           "date" : "2026-03-17T14:00:00Z",
           "note" : "Sprint retro"
         },
         {
-          "channelRaw" : "Video",
+          "channelRaw" : "Call",
           "date" : "2026-03-10T14:00:00Z",
           "note" : "Sprint planning"
         }

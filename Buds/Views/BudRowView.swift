@@ -63,11 +63,30 @@ struct BudRowView: View {
             }
             .tint(.green)
         }
-        .confirmationDialog("Log Contact", isPresented: $showingChannelPicker, titleVisibility: .visible) {
-            ForEach(ContactChannel.allCases, id: \.self) { channel in
-                Button(channel.rawValue) { onLog(channel) }
+        .popover(isPresented: $showingChannelPicker, arrowEdge: .top) {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(ContactChannel.allCases, id: \.self) { channel in
+                    Button {
+                        showingChannelPicker = false
+                        onLog(channel)
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: channel.systemImage)
+                                .font(.body)
+                                .frame(width: 24)
+                            Text(channel.rawValue)
+                                .font(.body)
+                        }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            Button("Cancel", role: .cancel) {}
+            .padding(.vertical, 4)
+            .presentationCompactAdaptation(.popover)
         }
         .swipeActions(edge: .trailing) {
             Button {

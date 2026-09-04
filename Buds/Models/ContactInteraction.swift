@@ -5,7 +5,6 @@ enum ContactChannel: String, Codable, CaseIterable, Sendable {
     case inPerson = "In Person"
     case call = "Call"
     case text = "Text"
-    case video = "Video"
     case social = "Social"
 
     var systemImage: String {
@@ -13,7 +12,6 @@ enum ContactChannel: String, Codable, CaseIterable, Sendable {
         case .inPerson: return "person.2.fill"
         case .call: return "phone.fill"
         case .text: return "message.fill"
-        case .video: return "video.fill"
         case .social: return "globe"
         }
     }
@@ -27,7 +25,12 @@ final class ContactInteraction {
     var bud: Bud?
 
     var channel: ContactChannel? {
-        get { channelRaw.flatMap { ContactChannel(rawValue: $0) } }
+        get {
+            guard let channelRaw else { return nil }
+            // Legacy interactions logged before the Video channel was removed.
+            if channelRaw == "Video" { return .call }
+            return ContactChannel(rawValue: channelRaw)
+        }
         set { channelRaw = newValue?.rawValue }
     }
 
