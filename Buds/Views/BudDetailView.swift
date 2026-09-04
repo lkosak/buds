@@ -223,7 +223,9 @@ struct BudDetailView: View {
         }
         .sheet(item: $newInteraction) { interaction in
             NavigationStack {
-                InteractionDetailView(interaction: interaction, isNew: true)
+                InteractionDetailView(interaction: interaction, isNew: true) {
+                    appendInteraction(interaction)
+                }
             }
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
@@ -261,9 +263,9 @@ struct BudDetailView: View {
     }
 
     private func logContact() {
-        let interaction = ContactInteraction()
-        appendInteraction(interaction)
-        newInteraction = interaction
+        // Not attached to the bud yet — appendInteraction runs on save, so the
+        // contact history doesn't flash a blank row behind the sheet.
+        newInteraction = ContactInteraction()
     }
 
     private func addNewEvent() {

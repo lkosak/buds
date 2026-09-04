@@ -5,15 +5,20 @@ struct InteractionDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let interaction: ContactInteraction
     let isNew: Bool
+    /// Called on save before the bud's last-contact date is recomputed. A new
+    /// interaction is attached to its bud here, so it never shows up in the
+    /// contact history until the user actually saves it.
+    var onSave: (() -> Void)?
 
     @State private var date: Date
     @State private var channel: ContactChannel?
     @State private var note: String
     @State private var showingDeleteConfirmation = false
 
-    init(interaction: ContactInteraction, isNew: Bool = false) {
+    init(interaction: ContactInteraction, isNew: Bool = false, onSave: (() -> Void)? = nil) {
         self.interaction = interaction
         self.isNew = isNew
+        self.onSave = onSave
         _date = State(initialValue: interaction.date)
         _channel = State(initialValue: interaction.channel)
         _note = State(initialValue: interaction.note ?? "")
@@ -64,7 +69,7 @@ struct InteractionDetailView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
-                    if isNew {
+                    if isNew, interaction.modelContext != nil {
                         modelContext.delete(interaction)
                     }
                     dismiss()
@@ -103,6 +108,7 @@ struct InteractionDetailView: View {
         interaction.date = Calendar.current.startOfDay(for: date)
         interaction.channel = channel
         interaction.note = note.isEmpty ? nil : note
+        onSave?()
         updateBudLastContact()
         dismiss()
     }
