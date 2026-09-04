@@ -40,8 +40,8 @@ struct SearchView: View {
                                 photo: ContactPhotoCache.shared.cachedPhoto(for: bud.contactID)
                             )
                         } label: {
-                            BudRowView(bud: bud) {
-                                let interaction = ContactInteraction()
+                            BudRowView(bud: bud) { channel in
+                                let interaction = ContactInteraction(channel: channel)
                                 if bud.interactions != nil {
                                     bud.interactions!.append(interaction)
                                 } else {

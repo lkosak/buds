@@ -2,10 +2,11 @@ import SwiftUI
 
 struct BudRowView: View {
     let bud: Bud
-    let onTalked: () -> Void
+    let onLog: (ContactChannel) -> Void
     let onTogglePin: () -> Void
 
     @State private var photo: UIImage?
+    @State private var showingChannelPicker = false
 
     private var urgency: UrgencyLevel {
         .from(lastContact: bud.lastContactDate, cadenceDays: bud.contactCadenceDays)
@@ -56,11 +57,17 @@ struct BudRowView: View {
         }
         .swipeActions(edge: .leading) {
             Button {
-                onTalked()
+                showingChannelPicker = true
             } label: {
-                Label("Talked", systemImage: "message.fill")
+                Label("Log", systemImage: "checkmark.circle.fill")
             }
             .tint(.green)
+        }
+        .confirmationDialog("Log Contact", isPresented: $showingChannelPicker, titleVisibility: .visible) {
+            ForEach(ContactChannel.allCases, id: \.self) { channel in
+                Button(channel.rawValue) { onLog(channel) }
+            }
+            Button("Cancel", role: .cancel) {}
         }
         .swipeActions(edge: .trailing) {
             Button {
