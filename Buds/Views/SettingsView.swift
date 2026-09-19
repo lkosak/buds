@@ -13,14 +13,18 @@ private struct ActivityView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
+private struct ExportFile: Identifiable {
+    let url: URL
+    var id: URL { url }
+}
+
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<Bud> { $0.isArchived })
     private var archivedBuds: [Bud]
 
-    @State private var exportURL: URL?
-    @State private var showingShareSheet = false
+    @State private var exportFile: ExportFile?
     @State private var showingImporter = false
     @State private var alertMessage: String?
 
@@ -52,8 +56,7 @@ struct SettingsView: View {
                         let url = FileManager.default.temporaryDirectory
                             .appendingPathComponent("buds-\(date).json")
                         try data.write(to: url)
-                        exportURL = url
-                        showingShareSheet = true
+                        exportFile = ExportFile(url: url)
                     } catch {
                         alertMessage = "Export failed: \(error.localizedDescription)"
                     }
@@ -73,10 +76,8 @@ struct SettingsView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingShareSheet) {
-            if let url = exportURL {
-                ActivityView(items: [url])
-            }
+        .sheet(item: $exportFile) { file in
+            ActivityView(items: [file.url])
         }
         .fileImporter(
             isPresented: $showingImporter,
