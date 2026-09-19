@@ -13,6 +13,38 @@ private struct ActivityView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
+private struct SyncStatusRow: View {
+    private var monitor = SyncMonitor.shared
+
+    var body: some View {
+        LabeledContent("iCloud Sync") {
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(summary)
+                if let detail {
+                    Text(detail)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.trailing)
+                }
+            }
+        }
+    }
+
+    private var summary: String {
+        if case .unavailable = monitor.accountState { return "Off" }
+        if monitor.isSyncing { return "Syncing…" }
+        if let lastSuccess = monitor.lastSuccess {
+            return "Synced \(lastSuccess.formatted(.relative(presentation: .named)))"
+        }
+        return monitor.lastError == nil ? "Waiting" : "Failing"
+    }
+
+    private var detail: String? {
+        if case .unavailable(let reason) = monitor.accountState { return reason }
+        return monitor.lastError
+    }
+}
+
 private struct ExportFile: Identifiable {
     let url: URL
     var id: URL { url }
@@ -49,6 +81,8 @@ struct SettingsView: View {
             }
 
             Section("Data") {
+                SyncStatusRow()
+
                 Button("Export Backup") {
                     do {
                         let data = try makeBackupData(context: modelContext)
